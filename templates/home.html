@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/home/css/home.css">
+    <link rel="stylesheet" href="{% static 'home/css/home.css' %}">
+    <script src="../static/home/js/jquery.js"></script>
+    <script src="{% static 'home/js/jquery.js' %}"></script>
+    <title>LOGIN</title>
+</head>
+
+<body>
+    <div id="wrap">
+        <h1>院长信箱</h1>
+        <br>
+        <br>
+        <br>
+        <div id="formbox">
+            <form action="/login/" method="POST">
+                <p>HELLO,WELCOME</p>
+                <label for="username">账号：</label>
+                <input type="text" name="userid" placeholder="account">
+                <label for="psw">密码：</label>
+                <input type="password" name="userpsw" placeholder="password">
+                <input type="submit" value="进入信箱">
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    $('input[type=submit]').click(function () {
+        if ($('input[type=text]').val() == '' || $('input[type=password]').val() == '') {
+            alert('请输入账号和密码')
+        }
+    })
+</script>

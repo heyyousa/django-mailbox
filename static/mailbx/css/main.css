@@ -1,0 +1,101 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #f5f5f5;
+
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    color: rgb(148, 9, 9);
+}
+
+li {
+    list-style: none;
+}
+
+.headbox {
+    height: 50px;
+    background-color: skyblue;
+}
+
+#iconbox {
+    float: left;
+    line-height: 50px;
+}
+
+#logobox {
+    float: left;
+    line-height: 50px;
+    font-size: 25px;
+    padding-left: 20px;
+}
+
+#menubox {
+    float: right;
+    line-height: 50px;
+    font-size: 15px;
+    padding-right: 40px;
+}
+
+.main {
+    width: 1000px;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.leftbox {
+    float: left;
+    width: 200px;
+    height: 200px;
+ 
+}
+
+.writeemail {
+    text-align: center;
+    width: 80px;
+    height: 25px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 5px;
+    line-height: 25px;
+    background-color: skyblue;
+}
+
+.backtop {
+    width: 80px;
+    height: 25px;
+    margin: 0 auto;
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 400;
+    cursor: pointer;
+    text-align: center;
+    background-color: white;
+    border-radius: 5px;
+    line-height: 25px;
+    background-color: skyblue;
+}
+
+.middlebox {
+    float: left;
+    width: 600px;
+    background-color: red;
+    height: 400px;
+}
+
+.rightbox {
+    float: left;
+    width: 200px;
+    height: 200px;
+    background-color: green;
+}
+
+
