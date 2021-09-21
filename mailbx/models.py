@@ -14,7 +14,7 @@ class Userinfo(models.Model):
     updated_time=models.DateTimeField('更新时间',auto_now=True)
     is_dean = models.BooleanField('是否院长', default=False)
     is_active=models.BooleanField('账号状态',default=True)
-    ud_operator=models.CharField('操作人',max_length=10)
+    ud_operator=models.CharField('操作人',max_length=10,default='')
 
     class Meta:
         db_table='userinfo'
@@ -36,7 +36,7 @@ class Emailinfo(models.Model):
     created_time=models.DateTimeField('创建时间',auto_now_add=True)
     updated_time=models.DateTimeField('更新时间',auto_now=True)
     is_active=models.BooleanField('帖子状态',default=True)
-    operator=models.CharField('操作人',max_length=10)
+    operator=models.CharField('操作人',max_length=10,default='')
 
     class Meta:
         db_table='emailinfo'
@@ -55,7 +55,7 @@ class Comments(models.Model):
     created_time=models.DateTimeField('创建时间',auto_now_add=True)
     updated_time=models.DateTimeField('更新时间',auto_now=True)
     is_active=models.BooleanField('评论状态',default=True)
-    operator=models.CharField('操作人',max_length=10)
+    operator=models.CharField('操作人',max_length=10,default='')
 
     class Meta:
         db_table='comments'

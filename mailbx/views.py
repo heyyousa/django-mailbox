@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.core.paginator import Paginator
 from mailbx.models import *
 from django.http import HttpResponse, HttpResponseRedirect
@@ -24,5 +24,19 @@ def uinfo(request):
     return user
 
 def mainpage(request):
+    emails=Emailinfo.objects.filter(poster='001')
+
+    paginator=Paginator(emails,10)
+    page_num=request.GET.get('page',1)
+    c_page=paginator.page(int(page_num))
+
     return render(request,'mailbx/main.html',locals())
 
+def logout(request):
+    resp=redirect('/login')
+    resp.delete_cookie('userid')
+    resp.delete_cookie('userpsw')
+    return resp
+
+def wemail(request):
+    return render(request,'mailbx/wemail.html')

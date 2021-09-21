@@ -22,40 +22,75 @@ li {
 }
 
 .headbox {
-    height: 50px;
+    height: 55px;
     background-color: skyblue;
 }
 
 #iconbox {
+    padding-left: 10px;
     float: left;
-    line-height: 50px;
+    line-height: 55px;
 }
 
 #logobox {
     float: left;
-    line-height: 50px;
+    line-height: 55px;
     font-size: 25px;
     padding-left: 20px;
 }
 
 #menubox {
     float: right;
-    line-height: 50px;
+    line-height: 55px;
     font-size: 15px;
     padding-right: 40px;
 }
 
 .main {
-    width: 1000px;
+    width: 1100px;
+    height: auto;
     margin: 0 auto;
     margin-top: 20px;
 }
 
 .leftbox {
     float: left;
-    width: 200px;
+    width: 150px;
     height: 200px;
- 
+}
+
+.recipient {
+    display: inline-block;
+    width: 300px;
+    margin: 10px 0 0 20px;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: right;
+}
+
+.title {
+    display: inline-block;
+    width: 340px;
+    margin: 10px 0 0 20px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.content {
+    display: inline-block;
+    width: 340px;
+    margin: 30px 0 0 20px;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.cttime {
+    display: inline-block;
+    width: 300px;
+    margin: 30px 0 0 20px;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: right;
 }
 
 .writeemail {
@@ -86,16 +121,31 @@ li {
 
 .middlebox {
     float: left;
-    width: 600px;
-    background-color: red;
+    width: 700px;
     height: 400px;
+}
+
+.emailbox li {
+    background: url('../../home/img/letter_bg.png');
+    width: 700px;
+    height: 100px;
+    border: 1px solid black;
+    border-radius: 10px;
+    margin-bottom: 10px;
 }
 
 .rightbox {
     float: left;
     width: 200px;
     height: 200px;
-    background-color: green;
+    background-color: blue;
 }
 
+.pagebox {
+    text-align: center;
+}
 
+.footer {
+    height: 50px;
+    background-color: #24292f;
+}
