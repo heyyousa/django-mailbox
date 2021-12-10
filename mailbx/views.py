@@ -1,7 +1,9 @@
+import json
+from django.core import serializers
 from django.shortcuts import render,redirect
 from django.core.paginator import Paginator
 from mailbx.models import *
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db.models import Q
 
 # Create your views here.
@@ -23,20 +25,57 @@ def uinfo(request):
     user=Userinfo.objects.get(id=userid)
     return user
 
+# 主页
 def mainpage(request):
-    emails=Emailinfo.objects.filter(poster='001')
+    if request.COOKIES.get('userid'):
 
-    paginator=Paginator(emails,10)
-    page_num=request.GET.get('page',1)
-    c_page=paginator.page(int(page_num))
+        # paginator=Paginator(emails,10)
+        # page_num=request.GET.get('page',1)
+        # c_page=paginator.page(int(page_num))
 
-    return render(request,'mailbx/main.html',locals())
+        return render(request,'mailbx/main.html')
+    else:
+        return redirect('/login/')
 
+
+# 院长主页
+def receive(request):
+    return render(request,'mailbx/receive.html')
+
+
+# 注销功能，cookie的设置都交给后端
 def logout(request):
-    resp=redirect('/login')
+    resp=HttpResponse('1')
     resp.delete_cookie('userid')
-    resp.delete_cookie('userpsw')
     return resp
 
+
 def wemail(request):
-    return render(request,'mailbx/wemail.html')
+    if request.method=='GET':
+        if request.COOKIES.get('userid'):
+            return render(request,'mailbx/wemail.html')
+        else:
+            return redirect('/login/')
+    elif request.method=='POST':
+        return
+
+
+# ————————非页面函数————————————————
+# 返回邮件json数据
+def main_back_emails(request):
+    userid = request.COOKIES.get('userid')
+
+    emails = Emailinfo.objects.filter(Q(poster=userid))
+
+    jsondata = serializers.serialize('json',emails)
+    # 用HttpResponse返回序列化好的数据，前端接收到用JSON.parse能转换成json格式
+
+    return HttpResponse(jsondata)
+
+def main_back_comments(request):
+    email_id=request.GET.get('emailid')
+    comments=Comments.objects.filter(Q(email_index=email_id))
+
+    jsondata = serializers.serialize('json',comments)
+
+    return HttpResponse(jsondata)

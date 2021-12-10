@@ -4,7 +4,8 @@ from django.db import models
 
 # 用户信息表
 class Userinfo(models.Model):
-    id=models.CharField('工号',primary_key=True,max_length=6)
+    id=models.CharField('id',primary_key=True,max_length=12)
+    nickname=models.CharField('昵称',max_length=16,default='')
     name=models.CharField('姓名',max_length=10)
     sex=models.CharField('性别',max_length=2)
     password=models.CharField('密码',max_length=20)
@@ -50,6 +51,7 @@ class Comments(models.Model):
     index=models.CharField('索引',primary_key=True,max_length=10)
     email_index=models.ForeignKey(Emailinfo,null=True,blank=True,on_delete=models.SET_NULL)
     content=models.TextField('评论')
+    commentator_id=models.CharField('评论人id',max_length=12,default='')
     commentator=models.CharField('评论人',max_length=20)
     floor=models.IntegerField('楼层',default=0)
     created_time=models.DateTimeField('创建时间',auto_now_add=True)

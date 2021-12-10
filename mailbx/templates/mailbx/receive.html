@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../../static/mailbx/css/receive.css">
+    <link rel="stylesheet" href="{% static 'mailbx/css/receive.css' %}">
+    <script src="../../../static/mailbx/js/echarts.js"></script>
+    <title>院长收件箱</title>
+</head>
+
+<body>
+    <div class="black"></div>
+
+    <div class="panelbox">
+        <!-- 用户图标 -->
+        <div class="usericon">
+            <img src="../../../static/mailbx/img/liushuji.png" alt="">
+            <ul class="usermenu">
+                <li>个人中心</li>
+                <li id="logout">注销</li>
+            </ul>
+        </div>
+
+        <ul class="btnbox">
+            <li><button class="allmail btn">全部邮件</button></li>
+            <li><button class="newmail btn">新邮件</button></li>
+            <li><button class="newreply btn">新回复</button></li>
+            <li><button class="noreply btn">未回复</button></li>
+        </ul>
+
+        <div class="receivebox">
+            <ul class="receive">
+                <li>21312412</li>
+                <li>21312412</li>
+                <li>21312412</li>
+                <li>21312412</li>
+                <li>21312412</li>
+                <li>21312412</li>
+                <li>21312412</li>
+                <li>21312412</li>
+                <li>21312412</li>
+                <li>21312412</li>
+                <li>21312412</li>
+                <li>21312412</li>
+            </ul>
+        </div>
+        <div class="infobox">
+            <ul>
+                <li>
+                    <h4>全部邮件：</h4>
+                    <p>12314413</p>
+                </li>
+                <li>
+                    <h4>新邮件：</h4>
+                    <p>123</p>
+                </li>
+                <li>
+                    <h4>收到回复：</h4>
+                    <p>3123</p>
+                </li>
+                <li>
+                    <h4>已处理：</h4>
+                    <p>232</p>
+                </li>
+            </ul>
+        </div>
+        <!-- 数据可视化模块echarts -->
+        <div class="echarts"></div>
+        <script>
+            let mychart = echarts.init(document.querySelector('.echarts'));
+            let option = {};
+            option = {
+                tooltip: {
+                    trigger: 'item',
+                },
+                legend: {
+                    top: '5%',
+                    left: 'center'
+                },
+                series: [
+                    {
+                        name: '邮件情况',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '30',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: 1048, name: '新邮件' },
+                            { value: 735, name: '收到回复' },
+                            { value: 580, name: '未回复' },
+                            { value: 484, name: '已处理' },
+                        ]
+                    }
+                ]
+            };
+            mychart.setOption(option);
+        </script>
+    </div>
+    <!-- 弹出式评论页面 -->
+    <div class="commentbox">
+        <div class="closebox">
+            <span class="close">1</span>
+        </div>
+        <div class="readzone">
+            <textarea readonly cols="30" rows="10">祝沧县医院越办越好</textarea>
+            <!-- <p>祝沧县医院越办越好</p> -->
+        </div>
+        <div class="commentzone">
+            <ul>
+                <li style="text-align: right;">
+                    <p>谢谢你的祝福2341241241242312351</p>
+                    <img src="../../../static/mailbx/img/liushuji.png" alt="">
+                </li>
+                <li style="text-align: left;">
+                    <img src="../../../static/mailbx/img/zhaoyuan.png" alt="">
+                    <p>不客气院长312412411414314</p>
+                </li>
+            </ul>
+        </div>
+        <div class="replyzone">
+            <textarea name="" id="" cols="10" rows="1" placeholder="请输入回复内容"></textarea>
+        </div>
+        <div class="cmBtnBox">
+            <input type="button" value="回复">
+            <input type="button" id='clear' value="清空">
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+
+    // 点击邮件弹出回复框，循环添加事件
+    let mail = document.querySelectorAll('.receive>li');
+    for (let i = 0; i < mail.length; i++) {
+        mail[i].onclick = function () {
+            let commentbox = document.querySelector('.commentbox');
+            let black = document.querySelector('.black');
+            commentbox.style.transform = 'scale(1)';
+            black.style.display = 'block';  //遮罩层开启
+        }
+    }
+
+    //点击发帖界面上的关闭按钮关闭发帖界面
+    let closebtn = document.querySelector('.closebox');
+    closebtn.onclick = function () {
+        let commentbox = document.querySelector('.commentbox');
+        let black = document.querySelector('.black');
+        let textarea = document.querySelector('.replyzone>textarea');
+        let title = document.querySelector('.titlebox>input');
+        commentbox.style.transform = 'scale(0)';
+        black.style.display = 'none';  //遮罩层关闭
+        textarea.value = ''; //清空replyzone内容
+    }
+
+    // 清空按钮功能
+    let clearbtn = document.querySelector('#clear');
+    clearbtn.onclick = function () {
+        let textarea = document.querySelector('.replyzone>textarea');
+        textarea.value = ''; //清除回复输入框的内容
+    }
+
+    //注销按钮功能
+    let logout = document.querySelector('#logout');
+    logout.onclick = function () {
+        let xhr = new XMLHttpRequest();
+        xhr.open('get', '/mailbx/logout/');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                window.location.href = '/login/'
+            }
+        }
+        xhr.send();
+    }
+
+    //分类按钮功能
+    let allmail = document.querySelector('.allmail');
+    let newmail = document.querySelector('.newmail');
+    let newreply = document.querySelector('.newreply');
+    let noreply = document.querySelector('.noreply');
+    allmail.onclick = function () {
+        newmail.classList.remove('btnbgc')
+        newreply.classList.remove('btnbgc')
+        noreply.classList.remove('btnbgc')
+
+        newmail.classList.add('btn')
+        newreply.classList.add('btn')
+        noreply.classList.add('btn')
+
+        allmail.classList.remove('btn');
+        allmail.classList.add('btnbgc');
+    }
+
+    newmail.onclick = function () {
+        allmail.classList.remove('btnbgc')
+        newreply.classList.remove('btnbgc')
+        noreply.classList.remove('btnbgc')
+
+        allmail.classList.add('btn')
+        newreply.classList.add('btn')
+        noreply.classList.add('btn')
+
+        newmail.classList.remove('btn');
+        newmail.classList.add('btnbgc');
+    };
+
+    newreply.onclick = function () {
+        allmail.classList.remove('btnbgc')
+        newmail.classList.remove('btnbgc')
+        noreply.classList.remove('btnbgc')
+
+        allmail.classList.add('btn')
+        newmail.classList.add('btn')
+        noreply.classList.add('btn')
+
+        newreply.classList.remove('btn');
+        newreply.classList.add('btnbgc');
+    };
+
+    noreply.onclick = function () {
+        allmail.classList.remove('btnbgc')
+        newmail.classList.remove('btnbgc')
+        newreply.classList.remove('btnbgc')
+
+        allmail.classList.add('btn')
+        newmail.classList.add('btn')
+        newreply.classList.add('btn')
+
+        noreply.classList.remove('btn');
+        noreply.classList.add('btnbgc');
+    };
+
+</script>

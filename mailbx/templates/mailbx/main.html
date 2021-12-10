@@ -5,95 +5,289 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../static/mailbx/css/main.css">
+    <link rel="stylesheet" href="../../../static/mailbx/css/main.css">
     <link rel="stylesheet" href="{% static 'mailbx/css/main.css' %}">
-    <script src="../../static/home/js/jquery.js"></script>
-    <script src="{% static 'mailbx/js/jquery.js' %}"></script>
-    <script src="../../static/mailbx/js/main.js"></script>
-    <script src="{% static 'mailbx/js/main.js' %}"></script>
-    <title>主页</title>
+    <title>信箱主页</title>
 </head>
 
 <body>
-    <div class="headbox">
-        <div id="iconbox"><img src="../../../static/mailbx/img/bluecross.png" alt=""></div>
-        <div id="logobox">
-            <a href="javascript:;">沧县医院</a>
+    <div class="black"></div>
+    <div class="panelbox">
+        <div class="usericon">
+            <ul class="usermenu">
+                <!--二级菜单必须是一级的儿子，不然停不住 -->
+                <li>个人中心</li>
+                <li id="logout">注销</li>
+            </ul>
         </div>
-        <div id="menubox">
+        <!-- 人物面板区块 -->
+        <div class="shuji">
             <ul>
-                <li><a href="/mailbx/logout/">注销</a></li>
+                <li><img src="../../../static/mailbx/img/liushuji.png" alt=""></li>
+                <li><img src="../../../static/mailbx/img/zhaoyuan.png" alt=""></li>
+                <li><img src="../../../static/mailbx/img/liushuji.png" alt=""></li>
+            </ul>
+            <div class="box"></div> <!-- 站位盒子 -->
+            <div class="leftarrow">
+                <div></div>
+            </div>
+            <div class="textbox">
+                <h4>刘炳琴</h4>
+                <p>沧县医院党委书记</p>
+            </div>
+            <div class="rightarrow">
+                <div></div>
+            </div>
+        </div>
+        <!-- 收件箱区块 -->
+        <div class="receive">
+            <ul>
             </ul>
         </div>
     </div>
-    <div class="main">
-        <div class="leftbox">
-            <div class="writeemail">
-                <a href="/mailbx/wemail/">写邮件</a>
-            </div>
-            <div class="backtop">
-                回到顶部
-            </div>
+    <!-- 弹出式发帖页面，在.glassbox外 -->
+    <div class="glassbg">
+        <div class="towho">尊敬的刘书记</div>
+        <div class="closebox">
+            <span class="close">1</span>
         </div>
-        <div class="middlebox">
-            <ul class="emailbox">
-                {% for m in c_page %}
-                <li>
-                    <h6 class="title"><a href="#">{{ m.title }}</a></h6>
-                    <h6 class="recipient">收件人：{{ m.recipient }}</h6>
-                    <p class="content">
-                        {% if m.content|length >= 30 %}
-                        {{ m.content|truncatechars:30 }}...
-                        {% else %}
-                        {{ m.content }}
-                        {% endif %}
-                    </p>
-                    <h6 class="cttime">
-                        {{ m.created_time|date:'y-m-d H:i:s' }}
-                    </h6>
+        <div class="titlebox">
+            <input type="text" placeholder="请输入标题">
+        </div>
+        <div class="writezone">
+            <textarea name="" id="" cols="30" rows="10" placeholder="请输入内容"></textarea>
+        </div>
+        <div class="btnbox">
+            <input type="button" value="发送">
+            <input type="button" id='clear' value="清空">
+        </div>
+    </div>
+    <!-- 弹出式评论页面 -->
+    <div class="commentbox">
+        <div class="cmclosebox">
+            <span class="cmclose">1</span>
+        </div>
+        <div class="readzone">
+            <textarea readonly cols="30" rows="10">祝沧县医院越办越好</textarea>
+        </div>
+        <div class="commentzone">
+            <ul>
+                <li style="text-align: right;">
+                    <p>谢谢你的祝福2341241241241251241251251</p>
+                    <img src="../../../static/mailbx/img/liushuji.png" alt="">
                 </li>
-                {% endfor %}
+                <li style="text-align: left;">
+                    <img src="../../../static/mailbx/img/zhaoyuan.png" alt="">
+                    <p>不客气院长</p>
+                </li>
             </ul>
-            <div class="pagebox">
-                {% if paginator.num_pages != 1 %}
-                {% if c_page.number != 1 %}
-                <a href="/mailbx/main?page={{ 1 }}">首页</a>
-                {% endif %}
-
-
-                {% if c_page.has_previous %}
-                <a href="/mailbx/main?page={{ c_page.previous_page_number }}">上一页</a>
-                {% endif %}
-
-
-                {% for p_num in paginator.page_range %}
-                {% if p_num == c_page.number %}
-                {{ p_num }}
-                {% else %}
-                <a href="/mailbx/main?page={{ p_num }}">{{ p_num }}</a>
-                {% endif %}
-                {% endfor %}
-
-
-                {% if c_page.has_next %}
-                <a href="/mailbx/main?page={{ c_page.next_page_number }}">下一页</a>
-                {% endif %}
-
-
-                {% if c_page.number != paginator.num_pages %}
-                <a href="/mailbx/main?page={{ paginator.num_pages }}">尾页</a>
-                {% endif %}
-                {% endif %}
-            </div>
         </div>
-        <div class="rightbox"></div>
-
-        <div style="clear: both;"></div>
+        <div class="replyzone">
+            <textarea name="" id="" cols="10" rows="10" placeholder="请输入回复内容"></textarea>
+        </div>
+        <div class="cmBtnBox">
+            <input type="button" value="回复">
+            <input type="button" id='cmclear' value="清空">
+        </div>
     </div>
-    <div class="footer">
-
-    </div>
-
+    <!-- 底部信息条 -->
+    <footer>
+        <p>由信息科提供技术支持，电话3163809</p>
+    </footer>
 </body>
 
 </html>
+
+<script>
+    //页面加载
+    window.addEventListener('load', function () {
+        let xhr = new XMLHttpRequest();
+        let fatherul = document.querySelector('.receive>ul');
+        xhr.open('get', '/mailbx/mbe/');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                let backdata = JSON.parse(xhr.responseText);
+                for (let i = 0; i < backdata.length; i++) {
+                    let mailli = document.createElement('li');
+                    mailli.innerHTML = backdata[i].fields.title;
+                    fatherul.appendChild(mailli);
+
+                    // 点击邮件弹出回复框，循环添加事件
+                    let mail = document.querySelectorAll('.receive>ul>li');
+                    let count = i;  //IE必须将for内的i赋值给一个变量再传递给下一个回调函数
+                    mail[i].onclick = function () {
+                        let commentbox = document.querySelector('.commentbox');
+                        let black = document.querySelector('.black');
+                        commentbox.style.transform = 'scale(1)';
+                        black.style.display = 'block';  //遮罩层开启
+
+                        let readzoneTextarea = document.querySelector('.readzone>textarea');
+                        readzoneTextarea.value = backdata[count].fields.content;
+
+                        let xhr = new XMLHttpRequest();
+                        xhr.open('get', '/mbc?emailid=' + backdata[count].pk, false);
+
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4 || xhr.status === 200) {
+                                console.log('1')
+                                //处理返回的评论数据
+                                let backcomments = JSON.parse(xhr.responseText);
+                                //选取评论区的父ul
+                                let fatherul = document.querySelector('.commentzone>ul');
+                                //循环线判断是发帖人本人的评论还是不是发帖人的评论，是的话把li写在右边，不是写左边
+                                for (let i = 0; i < backcomments.length; i++) {
+                                    //是本人的评论
+                                    if (backdata[count].fields.poster === backcomments[count].fields.commentator_id) {
+                                        let commentsli = document.createElement('li');
+                                        let commentsp = document.createElement('p');
+                                        let commentsimg = document.createElement('img');
+                                        commentsli.appendChild(commentsp);
+                                        commentsimg.appendChild(commentsimg);
+                                        fatherul.appendChild(commentsli);
+                                        commentsp.innerHTML = backcomments[count].fields.content;
+                                        // commentsimg.src=backcomments[count].fields.icon;
+                                    } else {  //不是本人的评论
+                                        let commentsli = document.createElement('li');
+                                        let commentsp = document.createElement('p');
+                                        let commentsimg = document.createElement('img');
+                                        commentsimg.appendChild(commentsimg);
+                                        commentsli.appendChild(commentsp);
+                                        fatherul.appendChild(commentsli);
+                                        commentsp.innerHTML = backcomments[count].fields.content;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //点击评论界面上的关闭按钮关闭评论界面
+                let cmclosebtn = document.querySelector('.cmclosebox');
+                cmclosebtn.onclick = function () {
+                    let commentbox = document.querySelector('.commentbox');
+                    let black = document.querySelector('.black');
+                    let textarea = document.querySelector('.replyzone>textarea');
+                    let title = document.querySelector('.titlebox>input');
+                    commentbox.style.transform = 'scale(0)';
+                    black.style.display = 'none';  //遮罩层关闭
+                    textarea.value = ''; //清空标题和replyzone内容
+                    title.value = '';
+                }
+            }
+        }
+        xhr.send(null);
+    })
+
+
+    //点击人物弹出发帖界面
+    let textbox = document.querySelector('.textbox');
+    textbox.onclick = function () {
+        let glassbg = document.querySelector('.glassbg');
+        let black = document.querySelector('.black');
+        glassbg.style.transform = 'scale(1)';
+        black.style.display = 'block';  //遮罩层开启
+    }
+
+    //点击发帖界面上的关闭按钮关闭发帖界面
+    let closebtn = document.querySelector('.closebox');
+    closebtn.onclick = function () {
+        let glassbg = document.querySelector('.glassbg');
+        let black = document.querySelector('.black');
+        let textarea = document.querySelector('textarea');
+        let title = document.querySelector('.titlebox>input');
+        glassbg.style.transform = 'scale(0)';
+        black.style.display = 'none';  //遮罩层关闭
+        textarea.value = ''; //清空标题和内容
+        title.value = '';
+    }
+
+    //照片轮播图代码块
+    let picul = document.querySelector('.shuji>ul');
+    let leftarrow = document.querySelector('.leftarrow>div');
+    let rightarrow = document.querySelector('.rightarrow>div');
+    let deanname = document.querySelector('.textbox>h4');
+    let deanduty = document.querySelector('.textbox>p');
+    let towho = document.querySelector('.towho');
+    let num = 0;
+    // 左按钮功能
+    leftarrow.onclick = function () {
+        if (num == 2) {
+            picul.style.left = 0;
+            num = 0;
+        }
+        num++;
+        clearInterval(picul.timer);
+        picul.timer = setInterval(function () {
+            let step = (-300 * num - picul.offsetLeft) / 10;
+            step = step > 0 ? Math.ceil(step) : Math.floor(step);
+            if (picul.offsetLeft == -300 * num) {
+                clearInterval(picul.timer);
+            }
+            if (num == 0 || num == 2) {
+                deanname.innerHTML = '刘炳琴';
+                deanduty.innerHTML = '沧县医院党委书记';
+                towho.innerHTML = '尊敬的刘书记';
+            } else {
+                deanname.innerHTML = '赵彬';
+                deanduty.innerHTML = '沧县医院院长';
+                towho.innerHTML = '尊敬的赵院长';
+            }
+            picul.style.left = picul.offsetLeft + step + 'px';
+        }, 15);
+    }
+    // 右箭头功能
+    rightarrow.onclick = function () {
+        if (num == 0) {
+            picul.style.left = -(picul.children.length - 1) * 300 + 'px';
+            num = picul.children.length - 1;
+        }
+        num--;
+        clearInterval(picul.timer);
+        picul.timer = setInterval(function () {
+            let step = (-300 * num - picul.offsetLeft) / 10;
+            step = step > 0 ? Math.ceil(step) : Math.floor(step);
+            if (picul.offsetLeft == -300 * num) {
+                clearInterval(picul.timer);
+            }
+            if (num == 0 || num == 2) {
+                deanname.innerHTML = '刘炳琴';
+                deanduty.innerHTML = '沧县医院党委书记';
+                towho.innerHTML = '尊敬的刘书记';
+            } else {
+                deanname.innerHTML = '赵彬';
+                deanduty.innerHTML = '沧县医院院长';
+                towho.innerHTML = '尊敬的赵院长';
+            }
+            picul.style.left = picul.offsetLeft + step + 'px';
+        }, 15);
+    }
+
+    // 清空按钮功能
+    let clearbtn = document.querySelector('#clear');
+    clearbtn.onclick = function () {
+        let textarea = document.querySelector('textarea');
+        textarea.value = '';
+    }
+
+
+    // 清空按钮功能
+    let cmclearbtn = document.querySelector('#cmclear');
+    cmclearbtn.onclick = function () {
+        let textarea = document.querySelector('.replyzone>textarea');
+        textarea.value = ''; //清除回复输入框的内容
+    }
+
+    //注销按钮功能
+    let logout = document.querySelector('#logout');
+    logout.onclick = function () {
+        let xhr = new XMLHttpRequest();
+        xhr.open('get', '/mailbx/logout/');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                window.location.href = '/login/'
+            }
+        }
+        xhr.send();
+    }
+
+</script>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> -->
+    <link rel="stylesheet" href="../static/home/css/signup.css">
+    <link rel="stylesheet" href="{% static 'home/css/signup.css' %}">
+    <!--django导入css文件-->
+    <title>注册</title>
+</head>
+
+<body>
+    <!-- 背景文字 -->
+    <div class="bgtext"></div>
+    <div class="bgbox">
+        <div class="formbox">
+            <form>
+                <div class="signbox">
+                    <input type="text" name="id" placeholder="账号">
+                    <input type="text" name="nickname" placeholder="昵称">
+                    <input type="password" name="psw" placeholder="密码">
+                    <input type="password" name="confirmpsw" placeholder="确认密码">
+                </div>
+                <div class="tipsbox">
+                    <ul>
+                        <li>账号不超过12位数字或英文，推荐使用工号或手机号</li>
+                        <li>昵称不超过8字，不能有空格标点或特殊字符</li>
+                        <li>密码不少于1位不超10位，不能有空格标点或特殊字符</li>
+                    </ul>
+                </div>
+            </form>
+            <div class="btnbox">
+                <button class="submitbtn">注册</button>
+                <button class="backbtn">返回</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    var submitbtn = document.querySelector('.submitbtn');
+    submitbtn.onclick = function () {
+        var id = document.querySelector('input[name=id]');
+        var nickname = document.querySelector('input[name=nickname]');
+        var psw = document.querySelector('input[name=psw');
+        var confirmpsw = document.querySelector('input[name=confirmpsw]');
+        if (id.value == '' || nickname.value == '' || psw.value == '' || confirmpsw.value == '') {
+            alert('请填写全部信息');
+        } else if (psw.value != confirmpsw.value) {
+            alert('两次密码不一致');
+        } else {
+            var xhr = new XMLHttpRequest();
+            var form = document.querySelector('form');
+            var formdata = new FormData(form);  //打包form标签内的数据
+            xhr.open('post', '/signup/');
+            // 使用formdata打包的数据不用设置请求头
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var backdata = JSON.parse(xhr.responseText);
+                    if (backdata.status == 0) {
+                        var formbox = document.querySelector('.formbox');
+                        var bgtext = document.querySelector('.bgtext');
+                        bgtext.innerHTML = "注册成功，自动跳转登陆界面"
+                        formbox.style.display = 'none';
+                        setTimeout("window.location.href = '/login/'", 2500);
+                    } else {
+                        alert(backdata.msg);
+                    }
+                }
+            }
+            xhr.send(formdata);
+        }
+    }
+
+    //返回按钮功能
+    let backbtn = document.querySelector('.backbtn');
+    backbtn.onclick = function () {
+        window.location.href = '/login/';
+    }
+</script>

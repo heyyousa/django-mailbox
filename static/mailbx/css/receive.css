@@ -1,0 +1,541 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-user-select: none;  /* 避免双击或拉选出蓝色背景 */
+}
+
+li {
+    list-style: none;
+}
+
+a{
+    text-decoration: none;
+}
+
+/* body {
+    background-color: #e493d0;
+    background-image: 
+        radial-gradient(closest-side,rgba(255,105,78,1),rgba(235,105,78,0)),
+        radial-gradient(closest-side,rgba(243,11,164,1),rgba(243,11,164,0)),
+        radial-gradient(closest-side,rgba(254,234,131,1),rgba(254,234,131,0)),
+        radial-gradient(closest-side,rgba(170,142,245,1),rgba(170,142,245,0)),
+        radial-gradient(closest-side,rgba(248,192,147,1),rgba(248,192,147,0));
+    background-size: 
+        130vmax 130vmax,
+        80vmax 80vmax,
+        90vmax 90vmax,
+        110vmax 110vmax,
+        90vmax 90vmax;
+    background-position:  
+        -80vmax -80vmax,
+        60vmax 60vmax,
+        10vmax 10vmax,
+        -10vmax -10vmax,
+        50vmax 50vmax;
+    background-repeat: no-repeat;
+    animation: 10s movement linear infinite;
+} */
+
+body {
+    background: url('../img/mainbg5.jpg') no-repeat;
+    font-family: 'Microsoft YaHei';
+    font-size: 16px;
+}
+
+@keyframes movement {
+    0%, 100% {
+        background-size: 
+        130vmax 130vmax,
+        80vmax 80vmax,
+        90vmax 90vmax,
+        110vmax 110vmax,
+        90vmax 90vmax;
+        background-position:  
+        -80vmax -80vmax,
+        60vmax 60vmax,
+        10vmax 10vmax,
+        -10vmax -10vmax,
+        50vmax 50vmax;
+    }
+    25% {
+        background-size: 
+        110vmax 110vmax,
+        90vmax 90vmax,
+        100vmax 100vmax,
+        90vmax 90vmax,
+        70vmax 80vmax;
+        background-position:  
+        -70vmax -90vmax,
+        50vmax 40vmax,
+        0vmax 20vmax,
+        -10vmax -20vmax,
+        40vmax 60vmax;
+    }
+    50% {
+        background-size: 
+        90vmax 90vmax,
+        100vmax 100vmax,
+        105vmax 105vmax,
+        100vmax 100vmax,
+        80vmax 80vmax;
+        background-position:  
+        -50vmax -70vmax,
+        40vmax 30vmax,
+        10vmax 0vmax,
+        20vmax 10vmax,
+        30vmax 70vmax;
+    }
+    75% {
+        background-size: 
+        90vmax 90vmax,
+        90vmax 90vmax,
+        100vmax 100vmax,
+        90vmax 90vmax,
+        70vmax 70vmax;
+    background-position:  
+        -50vmax -40vmax,
+        50vmax 70vmax,
+        20vmax 10vmax,
+        -10vmax -20vmax,
+        40vmax 60vmax;
+    }
+}
+
+.bgtext {
+    position: absolute;
+    font-size: 130px;
+    top: 50%;
+    margin-top: -99px;
+    left: 50%;
+    margin-left: -492px;
+    min-width: 984px;
+}
+
+/* 主面板样式 */
+.panelbox {
+    position: relative;
+    top: 20px;
+    margin: 0 auto;
+    width: 1000px;
+    height: 700px;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    border-top: 2px solid rgba(255,255,255,0.8);
+    border-left: 2px solid rgba(255,255,255,0.8);
+}
+
+/* 屏蔽罩样式 */
+.black {
+    position: absolute;
+    display: none;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+}
+
+.usericon {
+    position: absolute;
+    top: 600px;
+    left: 30px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    cursor: pointer;
+}
+
+.usericon>img {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+}
+
+.usericon:hover {
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,1),rgba(255,255,255,0.8)
+    );
+}
+
+.usermenu {
+    position: absolute;
+    top: -90px;
+    z-index: 10;
+    width: 150px;
+    min-height: 90px;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    border-top: 2px solid rgba(255,255,255,0.8);
+    border-left: 2px solid rgba(255,255,255,0.8);
+    transform: scaleY(0);
+    transform-origin: 50% 100%;
+    transition: all .3s;
+}
+
+.usericon:hover .usermenu {
+    transform: scaleY(1);
+}
+
+.usermenu>li {
+    width: 150px;
+    height: 25px;
+    line-height: 25px;
+    margin-top: 12px;
+    text-align: center;
+}
+
+.usermenu>li:hover {
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    color: rgb(158, 234, 106);
+}
+
+.btnbox {
+    position: absolute;
+    width: 100px;
+    height: 220px;
+    left: 30px;
+    top: 40px;
+}
+
+.btnbox {
+    margin-left: 10px;
+}
+
+.btnbox>li>button {
+    width: 80px;
+    height: 40px;
+    margin-top: 10px;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(10px);
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    border: transparent;
+    font-size: 17px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btnbgc {
+    background-color: rgb(158, 234, 106) !important;
+}
+
+.btn:hover {
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,1),rgba(255,255,255,0.8)
+    );
+}
+
+/* 小收件箱样式 */
+.receivebox {
+    position: absolute;
+    top: 40px;
+    left: 140px;
+    width: 530px;
+    height: 610px;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+}
+
+.receive {
+    margin-top: 20px;
+    width: 530px;
+    height: 570px;
+    overflow-y: auto;
+}
+
+.receive li {
+    width: 490px;
+    height: 70px;
+    margin: 0 auto;
+    margin-top: 10px;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 5px 5px 7px rgba(0,0,0,0.3);
+    cursor: pointer;
+    text-indent: 20px;
+    line-height: 40px;
+
+}
+
+.receive li:hover {
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,1),rgba(255,255,255,0.8)
+    );
+}
+
+/* 信息栏样式 */
+.infobox {
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    top: 40px;
+    left: 700px;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+}
+
+.infobox>ul {
+    margin-left: 15px;
+}
+
+.infobox>ul>li {
+    width: 230px;
+    height: 40px;
+    margin-top: 20px;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    line-height: 40px;
+    text-indent: 10px;
+}
+
+.infobox>ul>li>h4 {
+    display: inline-block;
+    width: 106px;
+}
+
+.infobox>ul>li>p {
+    display: inline-block;
+
+}
+
+/* echart容器样式 */
+.echarts {
+    position: absolute;
+    left: 690px;
+    top: 360px;
+    width: 300px;
+    height: 320px;
+}
+
+/* 弹出式评论框样式 */
+.commentbox {
+    position: absolute;
+    transform: scale(0);  /*使用缩放来实现弹出窗口*/
+    width: 700px;
+    height: 700px;
+    z-index: 6;
+    top: 20px;
+    left: 50%;
+    margin-left: -350px;
+    background-color:  		#708090;
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    border-top: 2px solid rgba(255,255,255,0.8);
+    border-left: 2px solid rgba(255,255,255,0.8);
+    transition: .4s;
+}
+
+.closebox {
+    position: absolute;
+    left: 660px;
+    top: 5px;
+    font-size: 0px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    transition: .3s;
+}
+
+.close {
+    margin-top: 14px;
+    margin-left: 5px;
+    display: block;
+}
+
+.close::before,.close::after {
+    content: '';
+    width: 20px;
+    height: 3px;
+    background: rgb(165, 135, 135);
+    display: block;
+    transition: .3s;
+}
+
+.close::before {
+    transform: rotate(45deg);
+}
+
+.close::after {
+    transform: translateY(-3px) rotate(-45deg);
+}
+
+.closebox:hover .close::before,.closebox:hover .close::after {
+    /* background: rgb(112, 207, 74); */
+    background: rgb(158, 234, 106);
+}
+
+.readzone {
+    position: absolute;
+    width: 600px;
+    height: 270px;
+    top: 30px;
+    left: 50%;
+    margin-left: -300px;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    border-top: 2px solid rgba(255,255,255,0.8);
+    border-left: 2px solid rgba(255,255,255,0.8);
+}
+
+.readzone>textarea {
+    margin-left: 25px;
+    margin-top: 12px;
+    width: 570px;
+    height: 240px;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 18px;
+    resize: none;
+    overflow-y: auto;
+}
+
+.commentzone {
+    position: absolute;
+    width: 600px;
+    height: 200px;
+    top: 320px;
+    left: 50px;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    border-top: 2px solid rgba(255,255,255,0.8);
+    border-left: 2px solid rgba(255,255,255,0.8);
+}
+
+.commentzone>ul {
+    width: 580px;
+    height: 180px;
+    margin-left: 10px;
+    margin-top: 10px;
+    overflow-y: auto;
+}
+
+.commentzone>ul>li {
+    padding-right: 6px;
+    margin-bottom: 8px;
+}
+
+.commentzone>ul>li>p {
+    display: inline-block;
+    min-height: 30px;
+    max-width: 232px;
+    font-size: 16px;
+    padding: 0 5px;
+    word-wrap: break-word;
+    background-color: 	rgb(158, 234, 106);
+    backdrop-filter: blur(10px);
+    border-radius: 5px;
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+}
+
+.commentzone>ul>li>img {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 25px;
+    vertical-align: top;  /* 让文本元素对齐img的设置 */
+}
+
+.replyzone {
+    position: absolute;
+    margin-left: 100px;
+    width: 400px;
+    height: 80px;
+    top: 530px;
+    left: 50px;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    border-top: 2px solid rgba(255,255,255,0.8);
+    border-left: 2px solid rgba(255,255,255,0.8);
+}
+
+.replyzone>textarea {
+    margin-left: 18px;
+    margin-top: 5px;
+    width: 370px;
+    height: 70px;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 17px;
+    resize: none;
+    overflow-y: auto;
+}
+
+.cmBtnBox {
+    position: absolute;
+    left: 50%;
+    margin-left: -170px;
+    width: 500px;
+    top: 630px;
+}
+
+.cmBtnBox>input {
+    margin-right: 150px;
+    width: 90px;
+    height: 40px;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    background: linear-gradient(
+        to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
+    );
+    backdrop-filter: blur(10px);
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+    border: transparent;
+    font-size: 17px;
+    transition: .2s;
+}
+
+.cmBtnBox>input:hover {
+    border: 4px solid rgb(158, 234, 106);
+}
