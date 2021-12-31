@@ -6,6 +6,7 @@ from django.db import models
 class Userinfo(models.Model):
     id=models.CharField('id',primary_key=True,max_length=12)
     nickname=models.CharField('昵称',max_length=16,default='')
+    iconurl = models.CharField('头像路径',max_length=500,default='')
     name=models.CharField('姓名',max_length=10)
     sex=models.CharField('性别',max_length=2)
     password=models.CharField('密码',max_length=20)
@@ -17,6 +18,7 @@ class Userinfo(models.Model):
     is_active=models.BooleanField('账号状态',default=True)
     ud_operator=models.CharField('操作人',max_length=10,default='')
 
+
     class Meta:
         db_table='userinfo'
         verbose_name_plural='用户信息'
@@ -27,13 +29,18 @@ class Userinfo(models.Model):
 # email表
 class Emailinfo(models.Model):
     index=models.CharField('索引',primary_key=True,max_length=10)
-    title=models.CharField('标题',max_length=20)
+    title=models.CharField('标题',max_length=30)
     content=models.TextField('内容')
     poster=models.CharField('发帖人',max_length=20)
     recipient=models.CharField('收件人',max_length=20)
     is_anonymous=models.BooleanField('是否匿名',default=False)
-    # 暂时用来获知是否回复信件↓
     comment_num=models.IntegerField('评论数',default=0)
+    # 用来标志最新评论的字段
+    poster_new_comment = models.IntegerField('发帖人新评flag',default=0)
+    other_new_comment = models.IntegerField('看帖人新评flag', default=0)
+    # 邮件标志flag，1表示新邮件，2表示未处理，3表示已处理
+    email_flag = models.IntegerField('邮件标志flag', default=1)
+    created_date = models.DateField('创建日期',auto_now_add=True)
     created_time=models.DateTimeField('创建时间',auto_now_add=True)
     updated_time=models.DateTimeField('更新时间',auto_now=True)
     is_active=models.BooleanField('帖子状态',default=True)

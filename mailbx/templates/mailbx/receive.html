@@ -17,7 +17,7 @@
     <div class="panelbox">
         <!-- 用户图标 -->
         <div class="usericon">
-            <img src="../../../static/mailbx/img/liushuji.png" alt="">
+            <img src="{{ dean.iconurl }}" alt="">
             <ul class="usermenu">
                 <li>个人中心</li>
                 <li id="logout">注销</li>
@@ -28,116 +28,63 @@
             <li><button class="allmail btn">全部邮件</button></li>
             <li><button class="newmail btn">新邮件</button></li>
             <li><button class="newreply btn">新回复</button></li>
-            <li><button class="noreply btn">未回复</button></li>
+            <li><button class="noreply btn">未处理</button></li>
         </ul>
 
         <div class="receivebox">
             <ul class="receive">
-                <li>21312412</li>
-                <li>21312412</li>
-                <li>21312412</li>
-                <li>21312412</li>
-                <li>21312412</li>
-                <li>21312412</li>
-                <li>21312412</li>
-                <li>21312412</li>
-                <li>21312412</li>
-                <li>21312412</li>
-                <li>21312412</li>
-                <li>21312412</li>
             </ul>
         </div>
         <div class="infobox">
             <ul>
-                <li>
-                    <h4>全部邮件：</h4>
-                    <p>12314413</p>
+                <li class="allemails">
+                    <h4>全部邮件</h4>
+                    <p></p>
                 </li>
-                <li>
-                    <h4>新邮件：</h4>
-                    <p>123</p>
+                <li class="newemails">
+                    <h4>新邮件</h4>
+                    <p></p>
                 </li>
-                <li>
-                    <h4>收到回复：</h4>
-                    <p>3123</p>
+                <li class="newreply">
+                    <h4>新回复</h4>
+                    <p></p>
                 </li>
-                <li>
-                    <h4>已处理：</h4>
-                    <p>232</p>
+                <li class="undid">
+                    <h4>未处理</h4>
+                    <p></p>
+                </li>
+                <li class="did">
+                    <h4>已处理</h4>
+                    <p></p>
                 </li>
             </ul>
         </div>
         <!-- 数据可视化模块echarts -->
         <div class="echarts"></div>
-        <script>
-            let mychart = echarts.init(document.querySelector('.echarts'));
-            let option = {};
-            option = {
-                tooltip: {
-                    trigger: 'item',
-                },
-                legend: {
-                    top: '5%',
-                    left: 'center'
-                },
-                series: [
-                    {
-                        name: '邮件情况',
-                        type: 'pie',
-                        radius: ['40%', '70%'],
-                        avoidLabelOverlap: false,
-                        label: {
-                            show: false,
-                            position: 'center'
-                        },
-                        emphasis: {
-                            label: {
-                                show: true,
-                                fontSize: '30',
-                                fontWeight: 'bold'
-                            }
-                        },
-                        labelLine: {
-                            show: false
-                        },
-                        data: [
-                            { value: 1048, name: '新邮件' },
-                            { value: 735, name: '收到回复' },
-                            { value: 580, name: '未回复' },
-                            { value: 484, name: '已处理' },
-                        ]
-                    }
-                ]
-            };
-            mychart.setOption(option);
-        </script>
     </div>
     <!-- 弹出式评论页面 -->
     <div class="commentbox">
         <div class="closebox">
             <span class="close">1</span>
         </div>
+        <div class="iconbox">
+            <img src="" alt="">
+        </div>
+        <div class="posterbox">
+            <p></p>
+        </div>
         <div class="readzone">
-            <textarea readonly cols="30" rows="10">祝沧县医院越办越好</textarea>
-            <!-- <p>祝沧县医院越办越好</p> -->
+            <textarea readonly cols="30" rows="10"></textarea>
         </div>
         <div class="commentzone">
             <ul>
-                <li style="text-align: right;">
-                    <p>谢谢你的祝福2341241241242312351</p>
-                    <img src="../../../static/mailbx/img/liushuji.png" alt="">
-                </li>
-                <li style="text-align: left;">
-                    <img src="../../../static/mailbx/img/zhaoyuan.png" alt="">
-                    <p>不客气院长312412411414314</p>
-                </li>
             </ul>
         </div>
         <div class="replyzone">
             <textarea name="" id="" cols="10" rows="1" placeholder="请输入回复内容"></textarea>
         </div>
         <div class="cmBtnBox">
-            <input type="button" value="回复">
+            <input type="button" id="replybtn" value="回复">
             <input type="button" id='clear' value="清空">
         </div>
     </div>
@@ -147,6 +94,109 @@
 </html>
 
 <script>
+    //页面加载,backdata为返回的邮件json数据
+    window.addEventListener('load', function () {
+        //开网页加载全部邮件按钮为按下状态
+        let allmail = document.querySelector('.allmail');
+        allmail.classList.remove('btn');
+        allmail.classList.add('btnbgc');
+
+        //异步获取邮件数据
+        let xhr = new XMLHttpRequest();
+        xhr.open('get', '/mailbx/rbe?t=' + Math.random());  //此处兼容IE浏览器，IE相同url不会多次发送ajax请求，所以添加一个随机数参数来形成不通的url
+        xhr.send(null);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+
+                let back = JSON.parse(xhr.responseText);
+                let backdata = JSON.parse(back.emailsdata);
+                let emailstatus = back.emailstatus;
+
+                //echarts图表初始化
+                iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+
+                let sortflag = 0;
+
+                let allmail = document.querySelector('.allmail');
+                let newmail = document.querySelector('.newmail');
+                let newreply = document.querySelector('.newreply');
+                let noreply = document.querySelector('.noreply');
+                allmail.onclick = function allmailbtn() {
+                    newmail.classList.remove('btnbgc')
+                    newreply.classList.remove('btnbgc')
+                    noreply.classList.remove('btnbgc')
+
+                    newmail.classList.add('btn')
+                    newreply.classList.add('btn')
+                    noreply.classList.add('btn')
+
+                    allmail.classList.remove('btn');
+                    allmail.classList.add('btnbgc');
+
+                    sortflag = 0;
+                    let fatherul = document.querySelector('.receive');
+                    fatherul.innerHTML = '';
+                    createmailli(backdata, emailstatus, sortflag, fatherul);
+                }
+
+                newmail.onclick = function () {
+                    allmail.classList.remove('btnbgc')
+                    newreply.classList.remove('btnbgc')
+                    noreply.classList.remove('btnbgc')
+
+                    allmail.classList.add('btn')
+                    newreply.classList.add('btn')
+                    noreply.classList.add('btn')
+
+                    newmail.classList.remove('btn');
+                    newmail.classList.add('btnbgc');
+
+                    sortflag = 1;
+                    let fatherul = document.querySelector('.receive');
+                    fatherul.innerHTML = '';
+                    createmailli(backdata, emailstatus, sortflag, fatherul);
+                }
+
+                newreply.onclick = function () {
+                    allmail.classList.remove('btnbgc')
+                    newmail.classList.remove('btnbgc')
+                    noreply.classList.remove('btnbgc')
+
+                    allmail.classList.add('btn')
+                    newmail.classList.add('btn')
+                    noreply.classList.add('btn')
+
+                    newreply.classList.remove('btn');
+                    newreply.classList.add('btnbgc');
+
+                    sortflag = 2;
+                    let fatherul = document.querySelector('.receive');
+                    fatherul.innerHTML = '';
+                    createmailli(backdata, emailstatus, sortflag, fatherul)
+                }
+
+                noreply.onclick = function () {
+                    allmail.classList.remove('btnbgc')
+                    newmail.classList.remove('btnbgc')
+                    newreply.classList.remove('btnbgc')
+
+                    allmail.classList.add('btn')
+                    newmail.classList.add('btn')
+                    newreply.classList.add('btn')
+
+                    noreply.classList.remove('btn');
+                    noreply.classList.add('btnbgc');
+
+                    sortflag = 3;
+                    let fatherul = document.querySelector('.receive');
+                    fatherul.innerHTML = '';
+                    createmailli(backdata, emailstatus, sortflag, fatherul);
+                }
+
+                allmailbtn(backdata, emailstatus, sortflag);
+            }
+        }
+    })
 
     // 点击邮件弹出回复框，循环添加事件
     let mail = document.querySelectorAll('.receive>li');
@@ -196,7 +246,7 @@
     let newmail = document.querySelector('.newmail');
     let newreply = document.querySelector('.newreply');
     let noreply = document.querySelector('.noreply');
-    allmail.onclick = function () {
+    allmail.onclick = function allEmails() {
         newmail.classList.remove('btnbgc')
         newreply.classList.remove('btnbgc')
         noreply.classList.remove('btnbgc')
@@ -209,7 +259,7 @@
         allmail.classList.add('btnbgc');
     }
 
-    newmail.onclick = function () {
+    newmail.onclick = function newEmails() {
         allmail.classList.remove('btnbgc')
         newreply.classList.remove('btnbgc')
         noreply.classList.remove('btnbgc')
@@ -222,7 +272,7 @@
         newmail.classList.add('btnbgc');
     };
 
-    newreply.onclick = function () {
+    newreply.onclick = function newReply() {
         allmail.classList.remove('btnbgc')
         newmail.classList.remove('btnbgc')
         noreply.classList.remove('btnbgc')
@@ -235,7 +285,7 @@
         newreply.classList.add('btnbgc');
     };
 
-    noreply.onclick = function () {
+    noreply.onclick = function undid() {
         allmail.classList.remove('btnbgc')
         newmail.classList.remove('btnbgc')
         newreply.classList.remove('btnbgc')
@@ -247,5 +297,830 @@
         noreply.classList.remove('btn');
         noreply.classList.add('btnbgc');
     };
+
+
+    function iniEcharts(newmails, newreplies, undids, dids) {
+        let mychart = echarts.init(document.querySelector('.echarts'));
+        let option = {};
+        option = {
+            tooltip: {
+                trigger: 'item',
+            },
+            legend: {
+                top: '5%',
+                left: 'center'
+            },
+            series: [
+                {
+                    name: '邮件情况',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '30',
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        { value: newmails, name: '新邮件' },
+                        { value: newreplies, name: '新回复' },
+                        { value: undids, name: '未处理' },
+                        { value: dids, name: '已处理' },
+                    ]
+                }
+            ]
+        };
+        mychart.setOption(option);
+    }
+
+
+
+    //循环创建邮件li
+    function createmailli(backdata, emailstatus, sortflag, fatherul) {
+        if (sortflag === 0) {
+            //右侧数据展示栏
+            let allmails = document.querySelector('.allemails>p');
+            let newmails = document.querySelector('.newemails>p');
+            let newreplies = document.querySelector('.newreply>p');
+            let undid = document.querySelector('.undid>p');
+            let did = document.querySelector('.did>p');
+            allmails.innerHTML = backdata.length;
+            newmails.innerHTML = emailstatus.new_emails;
+            newreplies.innerHTML = emailstatus.new_reply;
+            undid.innerHTML = emailstatus.untreated_emails;
+            did.innerHTML = emailstatus.did_emails;
+
+            //全部邮件按钮触发后执行
+            for (let i = 0; i < backdata.length; i++) {
+                let mailli = document.createElement('li');
+                let titleh4 = document.createElement('h4');
+                let newReplyH5 = document.createElement('h5');
+                let createTimeP = document.createElement('p');
+                mailli.appendChild(titleh4);
+                mailli.appendChild(newReplyH5);
+                mailli.appendChild(createTimeP);
+                fatherul.appendChild(mailli);
+                titleh4.innerHTML = backdata[i].fields.title;
+                createTimeP.innerHTML = backdata[i].fields.created_date;
+                //邮件标签代码
+                if (backdata[i].fields.email_flag === 3) {
+                    newReplyH5.innerHTML = '已处理';
+                    newReplyH5.style.color = '#5470c6';
+                }
+
+                if (backdata[i].fields.email_flag === 2) {
+                    newReplyH5.innerHTML = '未处理';
+                    newReplyH5.style.color = 'rgb(242,155,0)';
+                }
+
+                if (backdata[i].fields.poster_new_comment === 1) {
+                    newReplyH5.innerHTML = '新回复';
+                    newReplyH5.style.color = '#91cc75';
+                }
+
+                if (backdata[i].fields.email_flag === 1) {
+                    newReplyH5.innerHTML = '新邮件';
+                    newReplyH5.style.color = '#ee6666';
+                }
+
+                // 点击邮件弹出回复框，循环添加事件
+                let mail = document.querySelectorAll('.receive>li');
+                let count = i;  //IE必须将for内的i赋值给一个变量再传递给下一个回调函数
+                mail[i].onclick = function () {
+                    let commentbox = document.querySelector('.commentbox');
+                    let black = document.querySelector('.black');
+                    commentbox.style.transform = 'scale(1)';  //弹出动画
+                    black.style.display = 'block';  //遮罩层开启
+
+                    //将邮件内容填充到阅读区
+                    let readzoneTextarea = document.querySelector('.readzone>textarea');
+                    readzoneTextarea.value = backdata[count].fields.content;
+
+                    //选取用户头像img标签，准备用它的src
+                    let iconimg = document.querySelector('.usericon>img');
+
+                    //ajax请求该邮件的所有评论
+                    let xhr = new XMLHttpRequest();
+                    xhr.open('get', '/mailbx/rbc?emailid=' + backdata[count].pk + '&commentatorId=' + backdata[count].fields.poster + '&t=' + Math.random());  //此处兼容IE浏览器，IE相同url不会多次发送ajax请求，所以添加一个随机数参数来形成不通的url
+                    xhr.send();
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            //处理返回的评论数据
+                            let back = JSON.parse(xhr.responseText);
+                            let backcomments = JSON.parse(back.comments);
+                            let backcommentator = JSON.parse(back.commentator);
+
+                            //评论页面顶部的头像+昵称
+                            let topicon = document.querySelector('.iconbox>img');
+                            let nickname = document.querySelector('.posterbox>p');
+                            topicon.src = backcommentator[0].fields.iconurl;
+                            nickname.innerHTML = backcommentator[0].fields.nickname;
+
+                            //点开邮件把邮件标志改成未处理，并更新info窗口和echarts数据
+                            if (newReplyH5.innerHTML === '新邮件') {
+                                newReplyH5.innerHTML = '未处理';
+                                newReplyH5.style.color = 'rgb(242,155,0)';
+                                backdata[count].fields.email_flag = 2;
+                                emailstatus.new_emails--;
+                                emailstatus.untreated_emails++;
+                                iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                newmails.innerHTML = emailstatus.new_emails;
+                                undid.innerHTML = emailstatus.untreated_emails;
+                            } else if (newReplyH5.innerHTML === '新回复') {
+                                newReplyH5.innerHTML = '未处理';
+                                newReplyH5.style.color = 'rgb(242,155,0)';
+                                backdata[count].fields.poster_new_comment = 0;
+                                emailstatus.new_reply--;
+                                emailstatus.untreated_emails++;
+                                iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                newreplies.innerHTML = emailstatus.new_reply;
+                                undid.innerHTML = emailstatus.untreated_emails;
+                            }
+
+                            //选取评论区的父ul
+                            let fatherul = document.querySelector('.commentzone>ul');
+                            //循环线判断是否是发帖人本人的评论，是的话把li写在右边，不是写左边
+                            for (let i = 0; i < backcomments.length; i++) {
+                                //是本人的评论，和html页面在一起的js代码内部可以使用django的参数调用{{ xxx.aa }}
+                                if ("{{ dean.id }}" === backcomments[i].fields.commentator_id) {
+                                    let commentsli = document.createElement('li');
+                                    let commentsp = document.createElement('p');
+                                    let commentsimg = document.createElement('img');
+                                    commentsli.style.textAlign = 'right';
+                                    commentsli.appendChild(commentsp);
+                                    commentsli.appendChild(commentsimg);
+                                    fatherul.appendChild(commentsli);
+                                    commentsp.innerHTML = backcomments[i].fields.content;
+                                    commentsimg.src = iconimg.src;
+                                    // commentsimg.src=backcomments[count].fields.icon;
+                                } else {  //不是本人的评论
+                                    let commentsli = document.createElement('li');
+                                    let commentsp = document.createElement('p');
+                                    let commentsimg = document.createElement('img');
+                                    commentsli.style.textAlign = 'left';
+                                    commentsli.appendChild(commentsimg);
+                                    commentsli.appendChild(commentsp);
+                                    fatherul.appendChild(commentsli);
+                                    commentsp.innerHTML = backcomments[i].fields.content;
+                                    commentsimg.src = backcommentator[0].fields.iconurl;
+                                }
+                            }
+                        }
+                    }
+
+                    //回复按钮注册点击事件
+                    let replybtn = document.querySelector('#replybtn');
+                    replybtn.onclick = function () {
+                        let replyzone = document.querySelector('.replyzone>textarea');
+                        if (replyzone.value == '') {
+                            alert('请输入回复内容');
+                        } else {
+                            let xhr = new XMLHttpRequest();
+                            xhr.open('post', '/mailbx/mwc/');
+                            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                            xhr.send('content=' + replyzone.value + '&email_id=' + backdata[count].pk);
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === 4 && xhr.status === 200) {
+                                    let commentsli = document.createElement('li');
+                                    let commentsp = document.createElement('p');
+                                    let commentsimg = document.createElement('img');
+                                    let fatherul = document.querySelector('.commentzone>ul');
+                                    commentsli.style.textAlign = 'right';
+                                    commentsli.appendChild(commentsp);
+                                    commentsli.appendChild(commentsimg);
+                                    fatherul.appendChild(commentsli);
+                                    commentsp.innerHTML = replyzone.value;
+                                    commentsimg.src = iconimg.src;
+                                    fatherul.scrollTop = fatherul.scrollHeight;  //让滚动条自动滚到底部
+                                    replyzone.value = '';
+
+                                    //回复了以后将标志改为已处理
+                                    newReplyH5.innerHTML = '已处理';
+                                    newReplyH5.style.color = '#5470c6';
+                                    //同步info窗口和echarts图标数据
+                                    backdata[count].fields.email_flag = 3;
+                                    emailstatus.untreated_emails--;
+                                    emailstatus.did_emails++;
+                                    iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                    undid.innerHTML = emailstatus.untreated_emails;
+                                    did.innerHTML = emailstatus.did_emails;
+                                }
+                            }
+                        }
+                    }
+
+                    //点击评论界面上的关闭按钮关闭评论界面
+                    let cmclosebtn = document.querySelector('.closebox');
+                    cmclosebtn.onclick = function () {
+                        let commentbox = document.querySelector('.commentbox');
+                        let black = document.querySelector('.black');
+                        let textarea = document.querySelector('.replyzone>textarea');
+                        let fatherul = document.querySelector('.commentzone>ul');
+                        commentbox.style.transform = 'scale(0)';
+                        black.style.display = 'none';  //遮罩层关闭
+                        textarea.value = '';  //清空标题和replyzone内容
+                        fatherul.innerHTML = '';  //清空回复框内的内容防止重复添加
+                    }
+                }
+            }
+        } else if (sortflag === 1) {
+            //右侧数据展示栏
+            let allmails = document.querySelector('.allemails>p');
+            let newmails = document.querySelector('.newemails>p');
+            let newreplies = document.querySelector('.newreply>p');
+            let undid = document.querySelector('.undid>p');
+            let did = document.querySelector('.did>p');
+            allmails.innerHTML = backdata.length;
+            newmails.innerHTML = emailstatus.new_emails;
+            newreplies.innerHTML = emailstatus.new_reply;
+            undid.innerHTML = emailstatus.untreated_emails;
+            did.innerHTML = emailstatus.did_emails;
+            let a = 0;  //控制mail[]这个nodelist对象的子元素的选择
+
+            //新邮件按钮触发后执行
+            for (let i = 0; i < backdata.length; i++) {
+                if (backdata[i].fields.email_flag === 1) {
+                    let mailli = document.createElement('li');
+                    let titleh4 = document.createElement('h4');
+                    let newReplyH5 = document.createElement('h5');
+                    let createTimeP = document.createElement('p');
+                    mailli.appendChild(titleh4);
+                    mailli.appendChild(newReplyH5);
+                    mailli.appendChild(createTimeP);
+                    fatherul.appendChild(mailli);
+                    titleh4.innerHTML = backdata[i].fields.title;
+                    createTimeP.innerHTML = backdata[i].fields.created_date;
+                    //邮件标签代码
+                    if (backdata[i].fields.email_flag === 3) {
+                        newReplyH5.innerHTML = '已处理';
+                        newReplyH5.style.color = '#5470c6';
+                    }
+
+                    if (backdata[i].fields.email_flag === 2) {
+                        newReplyH5.innerHTML = '未处理';
+                        newReplyH5.style.color = 'rgb(242,155,0)';
+                    }
+
+                    if (backdata[i].fields.poster_new_comment === 1) {
+                        newReplyH5.innerHTML = '新回复';
+                        newReplyH5.style.color = '#91cc75';
+                    }
+
+                    if (backdata[i].fields.email_flag === 1) {
+                        newReplyH5.innerHTML = '新邮件';
+                        newReplyH5.style.color = '#ee6666';
+                    }
+
+                    // 点击邮件弹出回复框，循环添加事件
+                    let mail = document.querySelectorAll('.receive>li');
+                    let count = i;  //IE必须将for内的i赋值给一个变量再传递给下一个回调函数
+                    mail[a++].onclick = function () {
+                        let commentbox = document.querySelector('.commentbox');
+                        let black = document.querySelector('.black');
+                        commentbox.style.transform = 'scale(1)';  //弹出动画
+                        black.style.display = 'block';  //遮罩层开启
+
+                        //将邮件内容填充到阅读区
+                        let readzoneTextarea = document.querySelector('.readzone>textarea');
+                        readzoneTextarea.value = backdata[count].fields.content;
+
+                        //选取用户头像img标签，准备用它的src
+                        let iconimg = document.querySelector('.usericon>img');
+
+                        //ajax请求该邮件的所有评论
+                        let xhr = new XMLHttpRequest();
+                        xhr.open('get', '/mailbx/rbc?emailid=' + backdata[count].pk + '&commentatorId=' + backdata[count].fields.poster + '&t=' + Math.random());  //此处兼容IE浏览器，IE相同url不会多次发送ajax请求，所以添加一个随机数参数来形成不通的url
+                        xhr.send();
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                //处理返回的评论数据
+                                let back = JSON.parse(xhr.responseText);
+                                let backcomments = JSON.parse(back.comments);
+                                let backcommentator = JSON.parse(back.commentator);
+
+                                //评论页面顶部的头像+昵称
+                                let topicon = document.querySelector('.iconbox>img');
+                                let nickname = document.querySelector('.posterbox>p');
+                                topicon.src = backcommentator[0].fields.iconurl;
+                                nickname.innerHTML = backcommentator[0].fields.nickname;
+
+                                //点开邮件把邮件标志改成未处理，并更新info窗口和echarts数据
+                                if (newReplyH5.innerHTML === '新邮件') {
+                                    newReplyH5.innerHTML = '未处理';
+                                    newReplyH5.style.color = 'rgb(242,155,0)';
+                                    backdata[count].fields.email_flag = 2;
+                                    emailstatus.new_emails--;
+                                    emailstatus.untreated_emails++;
+                                    iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                    newmails.innerHTML = emailstatus.new_emails;
+                                    undid.innerHTML = emailstatus.untreated_emails;
+                                } else if (newReplyH5.innerHTML === '新回复') {
+                                    newReplyH5.innerHTML = '未处理';
+                                    newReplyH5.style.color = 'rgb(242,155,0)';
+                                    backdata[count].fields.poster_new_comment = 0;
+                                    emailstatus.new_reply--;
+                                    emailstatus.untreated_emails++;
+                                    iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                    newreply.innerHTML = emailstatus.new_reply;
+                                    undid.innerHTML = emailstatus.untreated_emails;
+                                }
+
+                                //选取评论区的父ul
+                                let fatherul = document.querySelector('.commentzone>ul');
+                                //循环线判断是否是发帖人本人的评论，是的话把li写在右边，不是写左边
+                                for (let i = 0; i < backcomments.length; i++) {
+                                    //是本人的评论，和html页面在一起的js代码内部可以使用django的参数调用{{ xxx.aa }}
+                                    if ("{{ dean.id }}" === backcomments[i].fields.commentator_id) {
+                                        let commentsli = document.createElement('li');
+                                        let commentsp = document.createElement('p');
+                                        let commentsimg = document.createElement('img');
+                                        commentsli.style.textAlign = 'right';
+                                        commentsli.appendChild(commentsp);
+                                        commentsli.appendChild(commentsimg);
+                                        fatherul.appendChild(commentsli);
+                                        commentsp.innerHTML = backcomments[i].fields.content;
+                                        commentsimg.src = iconimg.src;
+                                        // commentsimg.src=backcomments[count].fields.icon;
+                                    } else {  //不是本人的评论
+                                        let commentsli = document.createElement('li');
+                                        let commentsp = document.createElement('p');
+                                        let commentsimg = document.createElement('img');
+                                        commentsli.style.textAlign = 'left';
+                                        commentsli.appendChild(commentsimg);
+                                        commentsli.appendChild(commentsp);
+                                        fatherul.appendChild(commentsli);
+                                        commentsp.innerHTML = backcomments[i].fields.content;
+                                        commentsimg.src = backcommentator[0].fields.iconurl;
+                                    }
+                                }
+                            }
+                        }
+
+                        //回复按钮注册点击事件
+                        let replybtn = document.querySelector('#replybtn');
+                        replybtn.onclick = function () {
+                            let replyzone = document.querySelector('.replyzone>textarea');
+                            if (replyzone.value == '') {
+                                alert('请输入回复内容');
+                            } else {
+                                let xhr = new XMLHttpRequest();
+                                xhr.open('post', '/mailbx/mwc/');
+                                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                                xhr.send('content=' + replyzone.value + '&email_id=' + backdata[count].pk);
+                                xhr.onreadystatechange = function () {
+                                    if (xhr.readyState === 4 && xhr.status === 200) {
+                                        let commentsli = document.createElement('li');
+                                        let commentsp = document.createElement('p');
+                                        let commentsimg = document.createElement('img');
+                                        let fatherul = document.querySelector('.commentzone>ul');
+                                        commentsli.style.textAlign = 'right';
+                                        commentsli.appendChild(commentsp);
+                                        commentsli.appendChild(commentsimg);
+                                        fatherul.appendChild(commentsli);
+                                        commentsp.innerHTML = replyzone.value;
+                                        commentsimg.src = iconimg.src;
+                                        fatherul.scrollTop = fatherul.scrollHeight;  //让滚动条自动滚到底部
+                                        replyzone.value = '';
+
+                                        //回复了以后将标志改为已处理
+                                        newReplyH5.innerHTML = '已处理';
+                                        newReplyH5.style.color = '#5470c6';
+                                        //同步info窗口和echarts图标数据
+                                        backdata[count].fields.email_flag = 3;
+                                        emailstatus.untreated_emails--;
+                                        emailstatus.did_emails++;
+                                        iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                        undid.innerHTML = emailstatus.untreated_emails;
+                                        did.innerHTML = emailstatus.did_emails;
+                                    }
+                                }
+                            }
+                        }
+
+                        //点击评论界面上的关闭按钮关闭评论界面
+                        let cmclosebtn = document.querySelector('.closebox');
+                        cmclosebtn.onclick = function () {
+                            let commentbox = document.querySelector('.commentbox');
+                            let black = document.querySelector('.black');
+                            let textarea = document.querySelector('.replyzone>textarea');
+                            let fatherul = document.querySelector('.commentzone>ul');
+                            commentbox.style.transform = 'scale(0)';
+                            black.style.display = 'none';  //遮罩层关闭
+                            textarea.value = '';  //清空标题和replyzone内容
+                            fatherul.innerHTML = '';  //清空回复框内的内容防止重复添加
+                        }
+                    }
+                }
+            }
+        } else if (sortflag === 2) {
+            //右侧数据展示栏
+            let allmails = document.querySelector('.allemails>p');
+            let newmails = document.querySelector('.newemails>p');
+            let newreplies = document.querySelector('.newreply>p');
+            let undid = document.querySelector('.undid>p');
+            let did = document.querySelector('.did>p');
+            allmails.innerHTML = backdata.length;
+            newmails.innerHTML = emailstatus.new_emails;
+            newreplies.innerHTML = emailstatus.new_reply;
+            undid.innerHTML = emailstatus.untreated_emails;
+            did.innerHTML = emailstatus.did_emails;
+
+            let a = 0;  //控制mail[]这个nodelist对象的子元素的选择
+            //新回复按钮触发后执行，院长版本为poster_new_comment，用户版本为other_new_comment
+            for (let i = 0; i < backdata.length; i++) {
+                if (backdata[i].fields.poster_new_comment === 1) {
+                    let mailli = document.createElement('li');
+                    let titleh4 = document.createElement('h4');
+                    let newReplyH5 = document.createElement('h5');
+                    let createTimeP = document.createElement('p');
+                    mailli.appendChild(titleh4);
+                    mailli.appendChild(newReplyH5);
+                    mailli.appendChild(createTimeP);
+                    fatherul.appendChild(mailli);
+                    titleh4.innerHTML = backdata[i].fields.title;
+                    createTimeP.innerHTML = backdata[i].fields.created_date;
+                    //邮件标签代码
+                    if (backdata[i].fields.email_flag === 3) {
+                        newReplyH5.innerHTML = '已处理';
+                        newReplyH5.style.color = '#5470c6';
+                    }
+
+                    if (backdata[i].fields.email_flag === 2) {
+                        newReplyH5.innerHTML = '未处理';
+                        newReplyH5.style.color = 'rgb(242,155,0)';
+                    }
+
+                    if (backdata[i].fields.poster_new_comment === 1) {
+                        newReplyH5.innerHTML = '新回复';
+                        newReplyH5.style.color = '#91cc75';
+                    }
+
+                    if (backdata[i].fields.email_flag === 1) {
+                        newReplyH5.innerHTML = '新邮件';
+                        newReplyH5.style.color = '#ee6666';
+                    }
+
+                    // 点击邮件弹出回复框，循环添加事件
+                    let mail = document.querySelectorAll('.receive>li');
+                    let count = i;  //IE必须将for内的i赋值给一个变量再传递给下一个回调函数
+
+                    mail[a++].onclick = function () {
+                        let commentbox = document.querySelector('.commentbox');
+                        let black = document.querySelector('.black');
+                        commentbox.style.transform = 'scale(1)';  //弹出动画
+                        black.style.display = 'block';  //遮罩层开启
+
+                        //将邮件内容填充到阅读区
+                        let readzoneTextarea = document.querySelector('.readzone>textarea');
+                        readzoneTextarea.value = backdata[count].fields.content;
+
+                        //选取用户头像img标签，准备用它的src
+                        let iconimg = document.querySelector('.usericon>img');
+
+                        //ajax请求该邮件的所有评论
+                        let xhr = new XMLHttpRequest();
+                        xhr.open('get', '/mailbx/rbc?emailid=' + backdata[count].pk + '&commentatorId=' + backdata[count].fields.poster + '&t=' + Math.random());  //此处兼容IE浏览器，IE相同url不会多次发送ajax请求，所以添加一个随机数参数来形成不通的url
+                        xhr.send();
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                //处理返回的评论数据
+                                let back = JSON.parse(xhr.responseText);
+                                let backcomments = JSON.parse(back.comments);
+                                let backcommentator = JSON.parse(back.commentator);
+
+                                //评论页面顶部的头像+昵称
+                                let topicon = document.querySelector('.iconbox>img');
+                                let nickname = document.querySelector('.posterbox>p');
+                                topicon.src = backcommentator[0].fields.iconurl;
+                                nickname.innerHTML = backcommentator[0].fields.nickname;
+
+                                //点开邮件把邮件标志改成未处理，并更新info窗口和echarts数据
+                                if (newReplyH5.innerHTML === '新邮件') {
+                                    newReplyH5.innerHTML = '未处理';
+                                    newReplyH5.style.color = 'rgb(242,155,0)';
+                                    backdata[count].fields.email_flag = 2;
+                                    emailstatus.new_emails--;
+                                    emailstatus.untreated_emails++;
+                                    iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                    newmails.innerHTML = emailstatus.new_emails;
+                                    undid.innerHTML = emailstatus.untreated_emails;
+                                } else if (newReplyH5.innerHTML === '新回复') {
+                                    newReplyH5.innerHTML = '未处理';
+                                    newReplyH5.style.color = 'rgb(242,155,0)';
+                                    backdata[count].fields.email_flag = 2;
+                                    emailstatus.new_reply--;
+                                    emailstatus.untreated_emails++;
+                                    iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                    newreplies.innerHTML = emailstatus.new_reply;
+                                    undid.innerHTML = emailstatus.untreated_emails;
+                                }
+
+                                //选取评论区的父ul
+                                let fatherul = document.querySelector('.commentzone>ul');
+                                //循环线判断是否是发帖人本人的评论，是的话把li写在右边，不是写左边
+                                for (let i = 0; i < backcomments.length; i++) {
+                                    //是本人的评论，和html页面在一起的js代码内部可以使用django的参数调用{{ xxx.aa }}
+                                    if ("{{ dean.id }}" === backcomments[i].fields.commentator_id) {
+                                        let commentsli = document.createElement('li');
+                                        let commentsp = document.createElement('p');
+                                        let commentsimg = document.createElement('img');
+                                        commentsli.style.textAlign = 'right';
+                                        commentsli.appendChild(commentsp);
+                                        commentsli.appendChild(commentsimg);
+                                        fatherul.appendChild(commentsli);
+                                        commentsp.innerHTML = backcomments[i].fields.content;
+                                        commentsimg.src = iconimg.src;
+                                        // commentsimg.src=backcomments[count].fields.icon;
+                                    } else {  //不是本人的评论
+                                        let commentsli = document.createElement('li');
+                                        let commentsp = document.createElement('p');
+                                        let commentsimg = document.createElement('img');
+                                        commentsli.style.textAlign = 'left';
+                                        commentsli.appendChild(commentsimg);
+                                        commentsli.appendChild(commentsp);
+                                        fatherul.appendChild(commentsli);
+                                        commentsp.innerHTML = backcomments[i].fields.content;
+                                        commentsimg.src = backcommentator[0].fields.iconurl;
+                                    }
+                                }
+                            }
+                        }
+
+                        //回复按钮注册点击事件
+                        let replybtn = document.querySelector('#replybtn');
+                        replybtn.onclick = function () {
+                            let replyzone = document.querySelector('.replyzone>textarea');
+                            if (replyzone.value == '') {
+                                alert('请输入回复内容');
+                            } else {
+                                let xhr = new XMLHttpRequest();
+                                xhr.open('post', '/mailbx/mwc/');
+                                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                                xhr.send('content=' + replyzone.value + '&email_id=' + backdata[count].pk);
+                                xhr.onreadystatechange = function () {
+                                    if (xhr.readyState === 4 && xhr.status === 200) {
+                                        let commentsli = document.createElement('li');
+                                        let commentsp = document.createElement('p');
+                                        let commentsimg = document.createElement('img');
+                                        let fatherul = document.querySelector('.commentzone>ul');
+                                        commentsli.style.textAlign = 'right';
+                                        commentsli.appendChild(commentsp);
+                                        commentsli.appendChild(commentsimg);
+                                        fatherul.appendChild(commentsli);
+                                        commentsp.innerHTML = replyzone.value;
+                                        commentsimg.src = iconimg.src;
+                                        fatherul.scrollTop = fatherul.scrollHeight;  //让滚动条自动滚到底部
+                                        replyzone.value = '';
+
+                                        //回复了以后将标志改为已处理
+                                        newReplyH5.innerHTML = '已处理';
+                                        newReplyH5.style.color = '#5470c6';
+                                        //同步info窗口和echarts图标数据
+                                        backdata[count].fields.email_flag = 3;
+                                        emailstatus.untreated_emails--;
+                                        emailstatus.did_emails++;
+                                        iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                        undid.innerHTML = emailstatus.untreated_emails;
+                                        did.innerHTML = emailstatus.did_emails;
+                                    }
+                                }
+                            }
+                        }
+
+                        //点击评论界面上的关闭按钮关闭评论界面
+                        let cmclosebtn = document.querySelector('.closebox');
+                        cmclosebtn.onclick = function () {
+                            let commentbox = document.querySelector('.commentbox');
+                            let black = document.querySelector('.black');
+                            let textarea = document.querySelector('.replyzone>textarea');
+                            let fatherul = document.querySelector('.commentzone>ul');
+                            commentbox.style.transform = 'scale(0)';
+                            black.style.display = 'none';  //遮罩层关闭
+                            textarea.value = '';  //清空标题和replyzone内容
+                            fatherul.innerHTML = '';  //清空回复框内的内容防止重复添加
+                        }
+                    }
+                }
+            }
+        } else if (sortflag === 3) {
+            //右侧数据展示栏
+            let allmails = document.querySelector('.allemails>p');
+            let newmails = document.querySelector('.newemails>p');
+            let newreplies = document.querySelector('.newreply>p');
+            let undid = document.querySelector('.undid>p');
+            let did = document.querySelector('.did>p');
+            allmails.innerHTML = backdata.length;
+            newmails.innerHTML = emailstatus.new_emails;
+            newreplies.innerHTML = emailstatus.new_reply;
+            undid.innerHTML = emailstatus.untreated_emails;
+            did.innerHTML = emailstatus.did_emails;
+
+            let a = 0;  //控制mail[]这个nodelist对象的子元素的选择
+            //未处理按钮触发后执行
+            for (let i = 0; i < backdata.length; i++) {
+                if (backdata[i].fields.email_flag === 2 && backdata[i].fields.poster_new_comment === 0) {
+                    let mailli = document.createElement('li');
+                    let titleh4 = document.createElement('h4');
+                    let newReplyH5 = document.createElement('h5');
+                    let createTimeP = document.createElement('p');
+                    mailli.appendChild(titleh4);
+                    mailli.appendChild(newReplyH5);
+                    mailli.appendChild(createTimeP);
+                    fatherul.appendChild(mailli);
+                    titleh4.innerHTML = backdata[i].fields.title;
+                    createTimeP.innerHTML = backdata[i].fields.created_date;
+                    //邮件标签代码
+                    if (backdata[i].fields.email_flag === 3) {
+                        newReplyH5.innerHTML = '已处理';
+                        newReplyH5.style.color = '#5470c6';
+                    }
+
+                    if (backdata[i].fields.email_flag === 2) {
+                        newReplyH5.innerHTML = '未处理';
+                        newReplyH5.style.color = 'rgb(242,155,0)';
+                    }
+
+                    if (backdata[i].fields.poster_new_comment === 1) {
+                        newReplyH5.innerHTML = '新回复';
+                        newReplyH5.style.color = '#91cc75';
+                    }
+
+                    if (backdata[i].fields.email_flag === 1) {
+                        newReplyH5.innerHTML = '新邮件';
+                        newReplyH5.style.color = '#ee6666';
+                    }
+
+                    // 点击邮件弹出回复框，循环添加事件
+                    let mail = document.querySelectorAll('.receive>li');
+                    let count = i;  //IE必须将for内的i赋值给一个变量再传递给下一个回调函数
+                    mail[a++].onclick = function () {
+                        let commentbox = document.querySelector('.commentbox');
+                        let black = document.querySelector('.black');
+                        commentbox.style.transform = 'scale(1)';  //弹出动画
+                        black.style.display = 'block';  //遮罩层开启
+
+                        //将邮件内容填充到阅读区
+                        let readzoneTextarea = document.querySelector('.readzone>textarea');
+                        readzoneTextarea.value = backdata[count].fields.content;
+
+                        //选取用户头像img标签，准备用它的src
+                        let iconimg = document.querySelector('.usericon>img');
+
+                        //ajax请求该邮件的所有评论
+                        let xhr = new XMLHttpRequest();
+                        xhr.open('get', '/mailbx/rbc?emailid=' + backdata[count].pk + '&commentatorId=' + backdata[count].fields.poster + '&t=' + Math.random());  //此处兼容IE浏览器，IE相同url不会多次发送ajax请求，所以添加一个随机数参数来形成不通的url
+                        xhr.send();
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                //处理返回的评论数据
+                                let back = JSON.parse(xhr.responseText);
+                                let backcomments = JSON.parse(back.comments);
+                                let backcommentator = JSON.parse(back.commentator);
+
+                                //评论页面顶部的头像+昵称
+                                let topicon = document.querySelector('.iconbox>img');
+                                let nickname = document.querySelector('.posterbox>p');
+                                topicon.src = backcommentator[0].fields.iconurl;
+                                nickname.innerHTML = backcommentator[0].fields.nickname;
+
+                                //点开邮件把邮件标志改成未处理，并更新info窗口和echarts数据
+                                if (newReplyH5.innerHTML === '新邮件') {
+                                    newReplyH5.innerHTML = '未处理';
+                                    newReplyH5.style.color = '#fac858';
+                                    backdata[count].fields.email_flag = 2;
+                                    emailstatus.new_emails--;
+                                    emailstatus.untreated_emails++;
+                                    iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                    newmails.innerHTML = emailstatus.new_emails;
+                                    undid.innerHTML = emailstatus.untreated_emails;
+                                } else if (newReplyH5.innerHTML === '新回复') {
+                                    newReplyH5.innerHTML = '未处理';
+                                    newReplyH5.style.color = 'rgb(242,155,0)';
+                                    backdata[count].fields.poster_new_comment = 0;
+                                    emailstatus.new_reply--;
+                                    emailstatus.untreated_emails++;
+                                    iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                    newreplies.innerHTML = emailstatus.new_reply;
+                                    undid.innerHTML = emailstatus.untreated_emails;
+                                }
+
+                                //选取评论区的父ul
+                                let fatherul = document.querySelector('.commentzone>ul');
+                                //循环线判断是否是发帖人本人的评论，是的话把li写在右边，不是写左边
+                                for (let i = 0; i < backcomments.length; i++) {
+                                    //是本人的评论，和html页面在一起的js代码内部可以使用django的参数调用{{ xxx.aa }}
+                                    if ("{{ dean.id }}" === backcomments[i].fields.commentator_id) {
+                                        let commentsli = document.createElement('li');
+                                        let commentsp = document.createElement('p');
+                                        let commentsimg = document.createElement('img');
+                                        commentsli.style.textAlign = 'right';
+                                        commentsli.appendChild(commentsp);
+                                        commentsli.appendChild(commentsimg);
+                                        fatherul.appendChild(commentsli);
+                                        commentsp.innerHTML = backcomments[i].fields.content;
+                                        commentsimg.src = iconimg.src;
+                                        // commentsimg.src=backcomments[count].fields.icon;
+                                    } else {  //不是本人的评论
+                                        let commentsli = document.createElement('li');
+                                        let commentsp = document.createElement('p');
+                                        let commentsimg = document.createElement('img');
+                                        commentsli.style.textAlign = 'left';
+                                        commentsli.appendChild(commentsimg);
+                                        commentsli.appendChild(commentsp);
+                                        fatherul.appendChild(commentsli);
+                                        commentsp.innerHTML = backcomments[i].fields.content;
+                                        commentsimg.src = backcommentator[0].fields.iconurl;
+                                    }
+                                }
+                            }
+                        }
+
+                        //回复按钮注册点击事件
+                        let replybtn = document.querySelector('#replybtn');
+                        replybtn.onclick = function () {
+                            let replyzone = document.querySelector('.replyzone>textarea');
+                            if (replyzone.value == '') {
+                                alert('请输入回复内容');
+                            } else {
+                                let xhr = new XMLHttpRequest();
+                                xhr.open('post', '/mailbx/mwc/');
+                                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                                xhr.send('content=' + replyzone.value + '&email_id=' + backdata[count].pk);
+                                xhr.onreadystatechange = function () {
+                                    if (xhr.readyState === 4 && xhr.status === 200) {
+                                        let commentsli = document.createElement('li');
+                                        let commentsp = document.createElement('p');
+                                        let commentsimg = document.createElement('img');
+                                        let fatherul = document.querySelector('.commentzone>ul');
+                                        commentsli.style.textAlign = 'right';
+                                        commentsli.appendChild(commentsp);
+                                        commentsli.appendChild(commentsimg);
+                                        fatherul.appendChild(commentsli);
+                                        commentsp.innerHTML = replyzone.value;
+                                        commentsimg.src = iconimg.src;
+                                        fatherul.scrollTop = fatherul.scrollHeight;  //让滚动条自动滚到底部
+                                        replyzone.value = '';
+
+                                        //回复了以后将标志改为已处理
+                                        newReplyH5.innerHTML = '已处理';
+                                        newReplyH5.style.color = '#5470c6';
+                                        //同步info窗口和echarts图标数据
+                                        backdata[count].fields.email_flag = 3;
+                                        emailstatus.untreated_emails--;
+                                        emailstatus.did_emails++;
+                                        iniEcharts(emailstatus.new_emails, emailstatus.new_reply, emailstatus.untreated_emails, emailstatus.did_emails);
+                                        undid.innerHTML = emailstatus.untreated_emails;
+                                        did.innerHTML = emailstatus.did_emails;
+                                    }
+                                }
+                            }
+                        }
+
+                        //点击评论界面上的关闭按钮关闭评论界面
+                        let cmclosebtn = document.querySelector('.closebox');
+                        cmclosebtn.onclick = function () {
+                            let commentbox = document.querySelector('.commentbox');
+                            let black = document.querySelector('.black');
+                            let textarea = document.querySelector('.replyzone>textarea');
+                            let fatherul = document.querySelector('.commentzone>ul');
+                            commentbox.style.transform = 'scale(0)';
+                            black.style.display = 'none';  //遮罩层关闭
+                            textarea.value = '';  //清空标题和replyzone内容
+                            fatherul.innerHTML = '';  //清空回复框内的内容防止重复添加
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function allmailbtn(backdata, emailstatus, sortflag) {
+        newmail.classList.remove('btnbgc')
+        newreply.classList.remove('btnbgc')
+        noreply.classList.remove('btnbgc')
+
+        newmail.classList.add('btn')
+        newreply.classList.add('btn')
+        noreply.classList.add('btn')
+
+        allmail.classList.remove('btn');
+        allmail.classList.add('btnbgc');
+
+        sortflag = 0;
+        let fatherul = document.querySelector('.receive');
+        fatherul.innerHTML = '';
+        createmailli(backdata, emailstatus, sortflag, fatherul);
+    }
+
+
 
 </script>

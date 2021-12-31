@@ -14,16 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path, include
 from home import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('mailbx/',include('mailbx.urls')),
-    path('login/',views.login),  # 登录界面
-    path('signup/',views.signup),  # 注册功能
-    path('ctuser/',views.create_user),  # 创建测试用户
-    path('ctmail/',views.create_mail),  # 创建测试邮件
-    path('test/',views.test),  # ajax测试函数
-    path('ctcoms/',views.create_comments),  # 创建测试评论
+    path('mailbx/', include('mailbx.urls')),  # 分布式路由包含/mailbx/
+    path('login/', views.login),  # 登录界面
+    path('signup/', views.signup),  # 注册功能
+    path('ctmail/', views.create_mail),  # 创建测试邮件
+    path('test/', views.test),  # ajax测试函数
+    path('ctcoms/', views.create_comments),  # 创建测试评论
 ]

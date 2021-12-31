@@ -20553,7 +20553,7 @@
     darkMode: 'auto',
     // backgroundColor: 'rgba(0,0,0,0)',
     colorBy: 'series',
-    color: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+    color: ['#ee6666', '#91cc75', '#fac858', '#5470c6', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
     gradientColor: ['#f6efa6', '#d88273', '#bf444c'],
     aria: {
       decal: {

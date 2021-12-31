@@ -14,6 +14,7 @@
     <div class="black"></div>
     <div class="panelbox">
         <div class="usericon">
+            <img src="{{ user.iconurl }}"> <!-- 用django嵌入式调用参数传递头像路径 -->
             <ul class="usermenu">
                 <!--二级菜单必须是一级的儿子，不然停不住 -->
                 <li>个人中心</li>
@@ -27,12 +28,12 @@
                 <li><img src="../../../static/mailbx/img/zhaoyuan.png" alt=""></li>
                 <li><img src="../../../static/mailbx/img/liushuji.png" alt=""></li>
             </ul>
-            <div class="box"></div> <!-- 站位盒子 -->
+            <div class="box"></div> <!-- 占位盒子 -->
             <div class="leftarrow">
                 <div></div>
             </div>
             <div class="textbox">
-                <h4>刘炳琴</h4>
+                <h4>刘炳芹</h4>
                 <p>沧县医院党委书记</p>
             </div>
             <div class="rightarrow">
@@ -72,21 +73,13 @@
         </div>
         <div class="commentzone">
             <ul>
-                <li style="text-align: right;">
-                    <p>谢谢你的祝福2341241241241251241251251</p>
-                    <img src="../../../static/mailbx/img/liushuji.png" alt="">
-                </li>
-                <li style="text-align: left;">
-                    <img src="../../../static/mailbx/img/zhaoyuan.png" alt="">
-                    <p>不客气院长</p>
-                </li>
             </ul>
         </div>
         <div class="replyzone">
-            <textarea name="" id="" cols="10" rows="10" placeholder="请输入回复内容"></textarea>
+            <textarea name="" id="" cols="10" rows="10" placeholder="请输入评论内容"></textarea>
         </div>
         <div class="cmBtnBox">
-            <input type="button" value="回复">
+            <input type="button" id='replybtn' value="发送">
             <input type="button" id='cmclear' value="清空">
         </div>
     </div>
@@ -99,83 +92,97 @@
 </html>
 
 <script>
-    //页面加载
+    //页面加载,backdata为返回的邮件json数据
     window.addEventListener('load', function () {
         let xhr = new XMLHttpRequest();
-        let fatherul = document.querySelector('.receive>ul');
-        xhr.open('get', '/mailbx/mbe/');
+        xhr.open('get', '/mailbx/mbe?t=' + Math.random());  //此处兼容IE浏览器，IE相同url不会多次发送ajax请求，所以添加一个随机数参数来形成不通的url
+        xhr.send(null);
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
+                //照片轮播图代码块
+                let picul = document.querySelector('.shuji>ul');
+                let leftarrow = document.querySelector('.leftarrow>div');
+                let rightarrow = document.querySelector('.rightarrow>div');
+                let deanname = document.querySelector('.textbox>h4');
+                let deanduty = document.querySelector('.textbox>p');
+                let towho = document.querySelector('.towho');
+                let num = 0;
+                let deanid = '111';
+
                 let backdata = JSON.parse(xhr.responseText);
-                for (let i = 0; i < backdata.length; i++) {
-                    let mailli = document.createElement('li');
-                    mailli.innerHTML = backdata[i].fields.title;
-                    fatherul.appendChild(mailli);
-
-                    // 点击邮件弹出回复框，循环添加事件
-                    let mail = document.querySelectorAll('.receive>ul>li');
-                    let count = i;  //IE必须将for内的i赋值给一个变量再传递给下一个回调函数
-                    mail[i].onclick = function () {
-                        let commentbox = document.querySelector('.commentbox');
-                        let black = document.querySelector('.black');
-                        commentbox.style.transform = 'scale(1)';
-                        black.style.display = 'block';  //遮罩层开启
-
-                        let readzoneTextarea = document.querySelector('.readzone>textarea');
-                        readzoneTextarea.value = backdata[count].fields.content;
-
-                        let xhr = new XMLHttpRequest();
-                        xhr.open('get', '/mbc?emailid=' + backdata[count].pk, false);
-
-                        xhr.onreadystatechange = function () {
-                            if (xhr.readyState === 4 || xhr.status === 200) {
-                                console.log('1')
-                                //处理返回的评论数据
-                                let backcomments = JSON.parse(xhr.responseText);
-                                //选取评论区的父ul
-                                let fatherul = document.querySelector('.commentzone>ul');
-                                //循环线判断是发帖人本人的评论还是不是发帖人的评论，是的话把li写在右边，不是写左边
-                                for (let i = 0; i < backcomments.length; i++) {
-                                    //是本人的评论
-                                    if (backdata[count].fields.poster === backcomments[count].fields.commentator_id) {
-                                        let commentsli = document.createElement('li');
-                                        let commentsp = document.createElement('p');
-                                        let commentsimg = document.createElement('img');
-                                        commentsli.appendChild(commentsp);
-                                        commentsimg.appendChild(commentsimg);
-                                        fatherul.appendChild(commentsli);
-                                        commentsp.innerHTML = backcomments[count].fields.content;
-                                        // commentsimg.src=backcomments[count].fields.icon;
-                                    } else {  //不是本人的评论
-                                        let commentsli = document.createElement('li');
-                                        let commentsp = document.createElement('p');
-                                        let commentsimg = document.createElement('img');
-                                        commentsimg.appendChild(commentsimg);
-                                        commentsli.appendChild(commentsp);
-                                        fatherul.appendChild(commentsli);
-                                        commentsp.innerHTML = backcomments[count].fields.content;
-                                    }
-                                }
-                            }
-                        }
+                let fatherul = document.querySelector('.receive>ul');
+                createmailli(backdata, fatherul, deanid)
+                // 左按钮功能
+                leftarrow.onclick = function () {
+                    if (num == 2) {
+                        picul.style.left = 0;
+                        num = 0;
                     }
-                }
+                    num++;
 
-                //点击评论界面上的关闭按钮关闭评论界面
-                let cmclosebtn = document.querySelector('.cmclosebox');
-                cmclosebtn.onclick = function () {
-                    let commentbox = document.querySelector('.commentbox');
-                    let black = document.querySelector('.black');
-                    let textarea = document.querySelector('.replyzone>textarea');
-                    let title = document.querySelector('.titlebox>input');
-                    commentbox.style.transform = 'scale(0)';
-                    black.style.display = 'none';  //遮罩层关闭
-                    textarea.value = ''; //清空标题和replyzone内容
-                    title.value = '';
+                    if (num == 0 || num == 2) {
+                        deanname.innerHTML = '刘炳芹';
+                        deanduty.innerHTML = '沧县医院党委书记';
+                        towho.innerHTML = '尊敬的刘书记';
+                        deanid = '111';
+                    } else {
+                        deanname.innerHTML = '赵彬';
+                        deanduty.innerHTML = '沧县医院院长';
+                        towho.innerHTML = '尊敬的赵院长';
+                        deanid = '112';
+                    }
+
+                    clearInterval(picul.timer);
+                    picul.timer = setInterval(function () {
+                        let step = (-300 * num - picul.offsetLeft) / 10;
+                        step = step > 0 ? Math.ceil(step) : Math.floor(step);
+                        if (picul.offsetLeft == -300 * num) {
+                            clearInterval(picul.timer);
+                        }
+                        picul.style.left = picul.offsetLeft + step + 'px';
+                    }, 15);
+
+                    let fatherul = document.querySelector('.receive>ul');
+                    fatherul.innerHTML = '';
+                    createmailli(backdata, fatherul, deanid);
+                }
+                // 右箭头功能
+                rightarrow.onclick = function () {
+                    if (num == 0) {
+                        picul.style.left = -(picul.children.length - 1) * 300 + 'px';
+                        num = picul.children.length - 1;
+                    }
+                    num--;
+
+                    if (num == 0 || num == 2) {
+                        deanname.innerHTML = '刘炳芹';
+                        deanduty.innerHTML = '沧县医院党委书记';
+                        towho.innerHTML = '尊敬的刘书记';
+                        deanid = '111';
+                    } else {
+                        deanname.innerHTML = '赵彬';
+                        deanduty.innerHTML = '沧县医院院长';
+                        towho.innerHTML = '尊敬的赵院长';
+                        deanid = '112';
+                    }
+
+                    clearInterval(picul.timer);
+                    picul.timer = setInterval(function () {
+                        let step = (-300 * num - picul.offsetLeft) / 10;
+                        step = step > 0 ? Math.ceil(step) : Math.floor(step);
+                        if (picul.offsetLeft == -300 * num) {
+                            clearInterval(picul.timer);
+                        }
+
+                        picul.style.left = picul.offsetLeft + step + 'px';
+                    }, 15);
+
+                    let fatherul = document.querySelector('.receive>ul');
+                    fatherul.innerHTML = '';
+                    createmailli(backdata, fatherul, deanid);
                 }
             }
         }
-        xhr.send(null);
     })
 
 
@@ -184,9 +191,43 @@
     textbox.onclick = function () {
         let glassbg = document.querySelector('.glassbg');
         let black = document.querySelector('.black');
-        glassbg.style.transform = 'scale(1)';
+        glassbg.style.transform = 'scale(1)';  //弹出动画
         black.style.display = 'block';  //遮罩层开启
     }
+
+    //发送按钮注册点击事件
+    let sendbtn = document.querySelector('.btnbox');
+    sendbtn.onclick = function () {
+        let receiver = document.querySelector('.textbox>h4');
+        let title = document.querySelector('.titlebox>input');
+        let writezone = document.querySelector('.writezone>textarea');
+
+        //防止空标题和内容
+        if (title.value === '' || writezone.value === '') {
+            alert('请输入标题和内容');
+        } else {
+
+            let xhr = new XMLHttpRequest();
+            xhr.open('post', '/mailbx/mwe/');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+            xhr.send('receiver=' + receiver.innerHTML + '&title=' + title.value + '&content=' + writezone.value)
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let glassbg = document.querySelector('.glassbg');
+                    let black = document.querySelector('.black');
+                    let textarea = document.querySelector('textarea');
+                    let title = document.querySelector('.titlebox>input');
+                    glassbg.style.transform = 'scale(0)';
+                    black.style.display = 'none';  //遮罩层关闭
+                    textarea.value = ''; //清空标题和内容
+                    title.value = '';
+                    alert('发送成功');
+                    window.location.reload();
+                }
+            }
+        }
+    }
+
 
     //点击发帖界面上的关闭按钮关闭发帖界面
     let closebtn = document.querySelector('.closebox');
@@ -201,66 +242,6 @@
         title.value = '';
     }
 
-    //照片轮播图代码块
-    let picul = document.querySelector('.shuji>ul');
-    let leftarrow = document.querySelector('.leftarrow>div');
-    let rightarrow = document.querySelector('.rightarrow>div');
-    let deanname = document.querySelector('.textbox>h4');
-    let deanduty = document.querySelector('.textbox>p');
-    let towho = document.querySelector('.towho');
-    let num = 0;
-    // 左按钮功能
-    leftarrow.onclick = function () {
-        if (num == 2) {
-            picul.style.left = 0;
-            num = 0;
-        }
-        num++;
-        clearInterval(picul.timer);
-        picul.timer = setInterval(function () {
-            let step = (-300 * num - picul.offsetLeft) / 10;
-            step = step > 0 ? Math.ceil(step) : Math.floor(step);
-            if (picul.offsetLeft == -300 * num) {
-                clearInterval(picul.timer);
-            }
-            if (num == 0 || num == 2) {
-                deanname.innerHTML = '刘炳琴';
-                deanduty.innerHTML = '沧县医院党委书记';
-                towho.innerHTML = '尊敬的刘书记';
-            } else {
-                deanname.innerHTML = '赵彬';
-                deanduty.innerHTML = '沧县医院院长';
-                towho.innerHTML = '尊敬的赵院长';
-            }
-            picul.style.left = picul.offsetLeft + step + 'px';
-        }, 15);
-    }
-    // 右箭头功能
-    rightarrow.onclick = function () {
-        if (num == 0) {
-            picul.style.left = -(picul.children.length - 1) * 300 + 'px';
-            num = picul.children.length - 1;
-        }
-        num--;
-        clearInterval(picul.timer);
-        picul.timer = setInterval(function () {
-            let step = (-300 * num - picul.offsetLeft) / 10;
-            step = step > 0 ? Math.ceil(step) : Math.floor(step);
-            if (picul.offsetLeft == -300 * num) {
-                clearInterval(picul.timer);
-            }
-            if (num == 0 || num == 2) {
-                deanname.innerHTML = '刘炳琴';
-                deanduty.innerHTML = '沧县医院党委书记';
-                towho.innerHTML = '尊敬的刘书记';
-            } else {
-                deanname.innerHTML = '赵彬';
-                deanduty.innerHTML = '沧县医院院长';
-                towho.innerHTML = '尊敬的赵院长';
-            }
-            picul.style.left = picul.offsetLeft + step + 'px';
-        }, 15);
-    }
 
     // 清空按钮功能
     let clearbtn = document.querySelector('#clear');
@@ -282,12 +263,138 @@
     logout.onclick = function () {
         let xhr = new XMLHttpRequest();
         xhr.open('get', '/mailbx/logout/');
+        xhr.send();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 window.location.href = '/login/'
             }
         }
-        xhr.send();
+    }
+
+    //创建邮件li的功能函数 
+    function createmailli(backdata, fatherul, deanid) {
+        let a = 0;  //控制mail[]这个nodelist对象的子元素的选择
+        for (let i = 0; i < backdata.length; i++) {
+            if (backdata[i].fields.recipient === deanid) {
+                let mailli = document.createElement('li');
+                let titleh4 = document.createElement('h4');
+                mailli.appendChild(titleh4);
+                fatherul.appendChild(mailli);
+                titleh4.innerHTML = backdata[i].fields.title;
+                if (backdata[i].fields.other_new_comment === 1) {
+                    let newReplyP = document.createElement('p');
+                    mailli.appendChild(newReplyP);
+                    newReplyP.innerHTML = '新回复';
+                }
+
+                // 点击邮件弹出回复框，循环添加事件
+                let mail = document.querySelectorAll('.receive>ul>li');
+                let count = i;  //IE必须将for内的i赋值给一个变量再传递给下一个回调函数
+                mail[a++].onclick = function () {
+                    let commentbox = document.querySelector('.commentbox');
+                    let black = document.querySelector('.black');
+                    commentbox.style.transform = 'scale(1)';  //弹出动画
+                    black.style.display = 'block';  //遮罩层开启
+
+                    //将邮件内容填充到阅读区
+                    let readzoneTextarea = document.querySelector('.readzone>textarea');
+                    readzoneTextarea.value = backdata[count].fields.content;
+
+                    //选取用户头像img标签，准备用它的src
+                    let iconimg = document.querySelector('.usericon>img');
+
+                    //ajax请求该邮件的所有评论
+                    let xhr = new XMLHttpRequest();
+                    xhr.open('get', '/mailbx/mbc?emailid=' + backdata[count].pk + '&commentatorId=' + backdata[count].fields.recipient + '&t=' + Math.random());  //此处兼容IE浏览器，IE相同url不会多次发送ajax请求，所以添加一个随机数参数来形成不通的url
+                    xhr.send();
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            //处理返回的评论数据
+                            let back = JSON.parse(xhr.responseText);
+                            let backcomments = JSON.parse(back.comments);
+                            let backcommentator = JSON.parse(back.commentator);
+                            //选取评论区的父ul
+                            let fatherul = document.querySelector('.commentzone>ul');
+                            //循环先判断是否是发帖人本人的评论，是的话把li写在右边，不是写左边
+                            for (let i = 0; i < backcomments.length; i++) {
+                                //是本人的评论
+                                if ("{{ user.id }}" === backcomments[i].fields.commentator_id) {
+                                    let commentsli = document.createElement('li');
+                                    let commentsp = document.createElement('p');
+                                    let commentsimg = document.createElement('img');
+                                    commentsli.style.textAlign = 'right';
+                                    commentsli.appendChild(commentsp);
+                                    commentsli.appendChild(commentsimg);
+                                    fatherul.appendChild(commentsli);
+                                    commentsp.innerHTML = backcomments[i].fields.content;
+                                    commentsimg.src = iconimg.src;
+                                    // commentsimg.src=backcomments[count].fields.icon;
+                                } else {  //不是本人的评论
+                                    let commentsli = document.createElement('li');
+                                    let commentsp = document.createElement('p');
+                                    let commentsimg = document.createElement('img');
+                                    commentsli.style.textAlign = 'left';
+                                    commentsli.appendChild(commentsimg);
+                                    commentsli.appendChild(commentsp);
+                                    fatherul.appendChild(commentsli);
+                                    commentsp.innerHTML = backcomments[i].fields.content;
+                                    commentsimg.src = backcommentator[0].fields.iconurl;
+                                }
+                            }
+                        }
+                    }
+
+                    //回复按钮注册点击事件
+                    let replybtn = document.querySelector('#replybtn');
+                    replybtn.onclick = function () {
+                        let replyzone = document.querySelector('.replyzone>textarea');
+                        if (replyzone.value == '') {
+                            alert('请输入回复内容');
+                        } else {
+                            let xhr = new XMLHttpRequest();
+                            xhr.open('post', '/mailbx/mwc/');
+                            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                            xhr.send('content=' + replyzone.value + '&email_id=' + backdata[count].pk);
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === 4 && xhr.status === 200) {
+                                    let commentsli = document.createElement('li');
+                                    let commentsp = document.createElement('p');
+                                    let commentsimg = document.createElement('img');
+                                    let fatherul = document.querySelector('.commentzone>ul');
+                                    commentsli.style.textAlign = 'right';
+                                    commentsli.appendChild(commentsp);
+                                    commentsli.appendChild(commentsimg);
+                                    fatherul.appendChild(commentsli);
+                                    commentsp.innerHTML = replyzone.value;
+                                    commentsimg.src = iconimg.src;
+                                    fatherul.scrollTop = fatherul.scrollHeight;  //让滚动条自动滚到底部
+                                    replyzone.value = '';
+                                }
+                            }
+                        }
+                    }
+
+                    //点击评论界面上的关闭按钮关闭评论界面
+                    let cmclosebtn = document.querySelector('.cmclosebox');
+                    cmclosebtn.onclick = function () {
+                        let commentbox = document.querySelector('.commentbox');
+                        let black = document.querySelector('.black');
+                        let textarea = document.querySelector('.replyzone>textarea');
+                        let title = document.querySelector('.titlebox>input');
+                        let fatherul = document.querySelector('.commentzone>ul');
+                        commentbox.style.transform = 'scale(0)';
+                        black.style.display = 'none';  //遮罩层关闭
+                        textarea.value = ''; //清空标题和replyzone内容
+                        title.value = '';
+                        fatherul.innerHTML = '';  //清空回复框内的内容防止重复添加
+                        //点击有新回复的邮件关闭评论页面后通过刷新取消掉新回复的标签
+                        if (backdata[count].fields.other_new_comment === 1) {
+                            window.location.reload();
+                        }
+                    }
+                }
+            }
+        }
     }
 
 </script>
