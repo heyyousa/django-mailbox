@@ -1,1 +1,3 @@
 mailbx/migrations/
+mbenv/pyvenv.cfg
+home/settings.py

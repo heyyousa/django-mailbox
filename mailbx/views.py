@@ -129,6 +129,79 @@ def main_write_email(request):
     return HttpResponse(0)
 
 
+# 修改用户信息API
+def alteruserinfo(request):
+    newnickname = request.GET.get('newnickname')
+    newicon = request.GET.get('newicon')
+    userid = request.COOKIES.get('userid')
+    user = Userinfo.objects.get(Q(id=userid))
+
+    if newnickname:  # 若没有传递newnickname的话get取到的是none而不是''，所以用布尔判断
+        is_nickname = Userinfo.objects.filter(Q(nickname=newnickname))
+        print(newnickname)
+        if not is_nickname:
+            user.nickname = newnickname
+        else:
+            jsonback = {'status': 0, 'msg': '存在重名昵称请更换'}
+            return JsonResponse(jsonback)
+
+    if newicon:
+        user.iconurl = newicon
+
+    user.save()
+    jsonback = {'status': 1, 'msg': '修改成功'}
+    return JsonResponse(jsonback)
+
+
+# ————————recevie非页面功能函数API————————————
+# 院长主页返回邮件数据
+def recevie_back_emails(request):
+    deanid = request.COOKIES.get('userid')
+
+    emails = Emailinfo.objects.filter(Q(recipient=deanid)).order_by('-created_time')
+    emailsdata = serializers.serialize('json', emails)
+
+    # 将各个状态的邮件数量统计出来发给前端
+    new_emails = Emailinfo.objects.filter(Q(email_flag=1)).count()
+    new_reply = Emailinfo.objects.filter(Q(poster_new_comment=1)).count()
+    # ↓防止未处理和新回复有重叠的部分，限制未处理为是未处理并且不是新回复的邮件为未处理的真实数量↓
+    untreated_emails = Emailinfo.objects.filter(Q(email_flag=2) & Q(poster_new_comment=0)).count()
+    did_emails = Emailinfo.objects.filter(Q(email_flag=3)).count()
+    emailstatus = {'new_emails': new_emails, 'new_reply': new_reply, 'untreated_emails': untreated_emails,
+                   'did_emails': did_emails}
+
+    jsondata = {'emailstatus': emailstatus, 'emailsdata': emailsdata}
+
+    return JsonResponse(jsondata)
+
+
+# 院长主页返回评论
+def recevie_back_comments(request):
+    email_id = request.GET.get('emailid')
+    commentator_id = request.GET.get('commentatorId')
+
+    # 院长主页上的新回复点击完更改flag为0的功能
+    email = Emailinfo.objects.get(Q(index=email_id))
+    if email.poster_new_comment == 1:
+        email.poster_new_comment = 0
+        email.save()
+    # 新邮件点击完更改flag为2未处理的功能
+    if email.email_flag == 1:
+        email.email_flag = 2
+        email.save()
+
+    commentator = Userinfo.objects.filter(id=commentator_id)
+    commentatorjson = serializers.serialize('json', commentator)
+
+    comments = Comments.objects.filter(Q(email_index=email_id))
+    commentsjson = serializers.serialize('json', comments)
+
+    data = {'comments': commentsjson, 'commentator': commentatorjson}
+
+    return JsonResponse(data)
+
+
+# --------全局非功能函数API--------------
 # 院长主页和用户主页评论功能
 def main_write_comment(request):
     content = request.POST.get('content')
@@ -174,48 +247,9 @@ def main_write_comment(request):
     return HttpResponse(0)
 
 
-# ————————recevie非页面功能函数API————————————
-# 院长主页返回邮件数据
-def recevie_back_emails(request):
-    deanid = request.COOKIES.get('userid')
+# 返回全部头像的url
+def getallicons(request):
+    allicons = Usericons.objects.all()
+    alliconsjson = serializers.serialize('json', allicons)
 
-    emails = Emailinfo.objects.filter(Q(recipient=deanid)).order_by('-created_time')
-    emailsdata = serializers.serialize('json', emails)
-
-    # 将各个状态的邮件数量统计出来发给前端
-    new_emails = Emailinfo.objects.filter(Q(email_flag=1)).count()
-    new_reply = Emailinfo.objects.filter(Q(poster_new_comment=1)).count()
-    # ↓防止未处理和新回复有重叠的部分，限制未处理为是未处理并且不是新回复的邮件为未处理的真实数量↓
-    untreated_emails = Emailinfo.objects.filter(Q(email_flag=2) & Q(poster_new_comment=0)).count()
-    did_emails = Emailinfo.objects.filter(Q(email_flag=3)).count()
-    emailstatus = {'new_emails': new_emails, 'new_reply': new_reply, 'untreated_emails': untreated_emails,
-                   'did_emails': did_emails}
-
-    jsondata = {'emailstatus': emailstatus, 'emailsdata': emailsdata}
-
-    return JsonResponse(jsondata)
-
-
-def recevie_back_comments(request):
-    email_id = request.GET.get('emailid')
-    commentator_id = request.GET.get('commentatorId')
-
-    # 院长主页上的新回复点击完更改flag为0的功能
-    email = Emailinfo.objects.get(Q(index=email_id))
-    if email.poster_new_comment == 1:
-        email.poster_new_comment = 0
-        email.save()
-    # 新邮件点击完更改flag为2未处理的功能
-    if email.email_flag == 1:
-        email.email_flag = 2
-        email.save()
-
-    commentator = Userinfo.objects.filter(id=commentator_id)
-    commentatorjson = serializers.serialize('json', commentator)
-
-    comments = Comments.objects.filter(Q(email_index=email_id))
-    commentsjson = serializers.serialize('json', comments)
-
-    data = {'comments': commentsjson, 'commentator': commentatorjson}
-
-    return JsonResponse(data)
+    return HttpResponse(alliconsjson)

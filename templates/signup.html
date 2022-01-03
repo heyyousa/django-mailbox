@@ -13,16 +13,24 @@
 </head>
 
 <body>
+    <div class="black"></div>
     <!-- 背景文字 -->
     <div class="bgtext"></div>
     <div class="bgbox">
         <div class="formbox">
             <form>
+                <div class="usericon">
+                    <img src="../static/mailbx/img/usericon/1.jpg" alt="">
+                </div>
+                <div class="icontext">
+                    <p>点击更换头像</p>
+                </div>
                 <div class="signbox">
                     <input type="text" name="id" placeholder="账号">
                     <input type="text" name="nickname" placeholder="昵称">
                     <input type="password" name="psw" placeholder="密码">
                     <input type="password" name="confirmpsw" placeholder="确认密码">
+                    <input type="text" name="mailbxurl" id="iconurl" value="../../../static/mailbx/img/usericon/1.jpg">
                 </div>
                 <div class="tipsbox">
                     <ul>
@@ -38,17 +46,68 @@
             </div>
         </div>
     </div>
+    <!-- 弹出式头像选择页面 -->
+    <div class="chooseicon">
+        <ul class="clearfix">
+        </ul>
+    </div>
 </body>
 
 </html>
 
 <script>
+    window.addEventListener('load', function () {
+        //加载时请求一次头像数据，之后不再请求
+        let xhr = new XMLHttpRequest();
+        xhr.open('get', '/mailbx/getallicons/');
+        xhr.send();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                let iconsdata = JSON.parse(xhr.responseText);
+                let iconul = document.querySelector('.chooseicon>ul');
+
+                //弹出式头像选择界面
+                let iconbtn = document.querySelector('.usericon');
+                iconbtn.onclick = function () {
+                    let chooseicon = document.querySelector('.chooseicon');
+                    let black = document.querySelector('.black');
+                    chooseicon.style.transform = 'scale(1)';
+                    black.style.display = 'block';
+
+                    iconul.innerHTML = '';  //每次显示前清空ul内li
+
+                    for (let i = 0; i < iconsdata.length; i++) {
+                        let iconli = document.createElement('li');
+                        let iconimg = document.createElement('img');
+                        iconimg.src = iconsdata[i].fields.homeurl;
+                        iconli.appendChild(iconimg);
+                        iconul.appendChild(iconli);
+
+                        let icons = document.querySelectorAll('.chooseicon>ul>li');
+                        let count = i;
+                        icons[i].onclick = function () {
+                            chooseicon.style.transform = 'scale(0)';
+                            black.style.display = 'none';
+
+                            let usericon = document.querySelector('.usericon>img');
+                            let iconurlinput = document.querySelector('#iconurl');
+                            usericon.src = iconsdata[count].fields.homeurl;
+                            iconurlinput.value = iconsdata[count].fields.mailbxurl;
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    //注册按钮功能
     var submitbtn = document.querySelector('.submitbtn');
     submitbtn.onclick = function () {
         var id = document.querySelector('input[name=id]');
         var nickname = document.querySelector('input[name=nickname]');
         var psw = document.querySelector('input[name=psw');
         var confirmpsw = document.querySelector('input[name=confirmpsw]');
+
         if (id.value == '' || nickname.value == '' || psw.value == '' || confirmpsw.value == '') {
             alert('请填写全部信息');
         } else if (psw.value != confirmpsw.value) {
@@ -56,9 +115,12 @@
         } else {
             var xhr = new XMLHttpRequest();
             var form = document.querySelector('form');
-            var formdata = new FormData(form);  //打包form标签内的数据
+            var formdata = new FormData(form);
+
+            let iconurlipt = document.querySelector('#iconurl');
             xhr.open('post', '/signup/');
             // 使用formdata打包的数据不用设置请求头
+            xhr.send(formdata);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     var backdata = JSON.parse(xhr.responseText);
@@ -73,7 +135,6 @@
                     }
                 }
             }
-            xhr.send(formdata);
         }
     }
 
@@ -82,4 +143,6 @@
     backbtn.onclick = function () {
         window.location.href = '/login/';
     }
+
+
 </script>

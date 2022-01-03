@@ -41,6 +41,7 @@ def login(request):
             return JsonResponse(jsondata)
 
 
+# 注册页面包括功能API
 def signup(request):
     if request.method == 'GET':
         return render(request, 'signup.html')
@@ -48,6 +49,7 @@ def signup(request):
         userid = request.POST.get('id')
         nickname = request.POST.get('nickname')
         userpsw = request.POST.get('psw')
+        usericon = request.POST.get('mailbxurl')
 
         if Userinfo.objects.filter(id=userid):
             backdata = {'status': 1, 'msg': '账号已被注册'}
@@ -58,13 +60,14 @@ def signup(request):
             return JsonResponse(backdata)
 
         try:
-            Userinfo.objects.create(id=userid, nickname=nickname, sex='', password=userpsw, keshi='', duty='')
+            Userinfo.objects.create(id=userid, nickname=nickname, sex='', password=userpsw, keshi='', duty='', iconurl=usericon)
         except Exception as e:
             print('--id或昵称写入重复 %s' % (e))
             backdata = {'status': 1, 'msg': '账号已被注册'}
             return JsonResponse(backdata)
 
         backdata = {'status': 0, 'msg': '注册成功'}
+
         return JsonResponse(backdata)
 
 

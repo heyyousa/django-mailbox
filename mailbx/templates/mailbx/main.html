@@ -17,7 +17,7 @@
             <img src="{{ user.iconurl }}"> <!-- 用django嵌入式调用参数传递头像路径 -->
             <ul class="usermenu">
                 <!--二级菜单必须是一级的儿子，不然停不住 -->
-                <li>个人中心</li>
+                <li id="usercenter">个人中心</li>
                 <li id="logout">注销</li>
             </ul>
         </div>
@@ -48,7 +48,7 @@
     </div>
     <!-- 弹出式发帖页面，在.glassbox外 -->
     <div class="glassbg">
-        <div class="towho">尊敬的刘书记</div>
+        <div class="towho">致刘书记</div>
         <div class="closebox">
             <span class="close">1</span>
         </div>
@@ -66,10 +66,10 @@
     <!-- 弹出式评论页面 -->
     <div class="commentbox">
         <div class="cmclosebox">
-            <span class="cmclose">1</span>
+            <span class="cmclose"></span>
         </div>
         <div class="readzone">
-            <textarea readonly cols="30" rows="10">祝沧县医院越办越好</textarea>
+            <textarea readonly cols="30" rows="10"></textarea>
         </div>
         <div class="commentzone">
             <ul>
@@ -82,6 +82,44 @@
             <input type="button" id='replybtn' value="发送">
             <input type="button" id='cmclear' value="清空">
         </div>
+    </div>
+
+    <!-- 弹出式个人中心 -->
+    <div class="usercenter">
+        <div class="usercentericon">
+            <img src="" alt="">
+        </div>
+        <div class="icontext">
+            <p>点击更换头像</p>
+        </div>
+        <div class="signbox">
+            <ul>
+                <li>
+                    <p>账号:</p>
+                    <p class="account"></p>
+                </li>
+                <li>
+                    <p>昵称:</p>
+                    <input type="text" name="nickname" id="nickname" value="">
+                </li>
+            </ul>
+        </div>
+        <div class="tipsbox">
+            <ul>
+                <li>账号不可修改</li>
+                <li>单击昵称修改，不超过8个字，不能含有空格标点或特殊字符</li>
+            </ul>
+        </div>
+        <div class="userbtnbox">
+            <button class="submitbtn">保存</button>
+            <button class="backbtn">返回</button>
+        </div>
+    </div>
+
+    <!-- 弹出式头像选择页面 -->
+    <div class="chooseicon">
+        <ul class="clearfix">
+        </ul>
     </div>
     <!-- 底部信息条 -->
     <footer>
@@ -123,12 +161,12 @@
                     if (num == 0 || num == 2) {
                         deanname.innerHTML = '刘炳芹';
                         deanduty.innerHTML = '沧县医院党委书记';
-                        towho.innerHTML = '尊敬的刘书记';
+                        towho.innerHTML = '致刘书记';
                         deanid = '111';
                     } else {
                         deanname.innerHTML = '赵彬';
                         deanduty.innerHTML = '沧县医院院长';
-                        towho.innerHTML = '尊敬的赵院长';
+                        towho.innerHTML = '致赵院长';
                         deanid = '112';
                     }
 
@@ -157,12 +195,12 @@
                     if (num == 0 || num == 2) {
                         deanname.innerHTML = '刘炳芹';
                         deanduty.innerHTML = '沧县医院党委书记';
-                        towho.innerHTML = '尊敬的刘书记';
+                        towho.innerHTML = '致刘书记';
                         deanid = '111';
                     } else {
                         deanname.innerHTML = '赵彬';
                         deanduty.innerHTML = '沧县医院院长';
-                        towho.innerHTML = '尊敬的赵院长';
+                        towho.innerHTML = '致赵院长';
                         deanid = '112';
                     }
 
@@ -183,8 +221,116 @@
                 }
             }
         }
+
     })
 
+    //个人中心模块
+    window.addEventListener('load', function () {
+        //加载时请求一次头像数据，之后不再请求
+        let xhr = new XMLHttpRequest();
+        xhr.open('get', '/mailbx/getallicons?t=' + Math.random());
+        xhr.send();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                let iconsdata = JSON.parse(xhr.responseText);
+
+                //弹出式个人中心
+                let usercenterbtn = document.querySelector('#usercenter');
+                usercenterbtn.onclick = function () {
+                    let usercenter = document.querySelector('.usercenter');
+                    let black = document.querySelector('.black');
+                    usercenter.style.transform = 'scale(1)';  //弹出动画
+                    black.style.display = 'block';  //遮罩层开启
+
+                    let usercentericon = document.querySelector('.usercentericon>img');
+                    usercentericon.src = "{{ user.iconurl }}";
+
+                    let account = document.querySelector('.account');
+                    let nickname = document.querySelector('#nickname');
+                    account.innerHTML = "{{ user.id }}";
+                    nickname.value = "{{ user.nickname }}";
+                }
+
+
+                //弹出式头像选择界面
+                let iconbtn = document.querySelector('.usercentericon');
+                iconbtn.onclick = function () {
+                    let iconul = document.querySelector('.chooseicon>ul');
+                    let chooseicon = document.querySelector('.chooseicon');
+                    let black = document.querySelector('.black');
+                    chooseicon.style.transform = 'scale(1)';
+                    black.style.display = 'block';
+
+                    iconul.innerHTML = '';  //每次显示前清空ul内li
+
+                    for (let i = 0; i < iconsdata.length; i++) {
+                        let iconli = document.createElement('li');
+                        let iconimg = document.createElement('img');
+                        iconimg.src = iconsdata[i].fields.mailbxurl;
+                        iconli.appendChild(iconimg);
+                        iconul.appendChild(iconli);
+
+                        let icons = document.querySelectorAll('.chooseicon>ul>li');
+                        let count = i;
+                        icons[i].onclick = function () {
+                            chooseicon.style.transform = 'scale(0)';
+
+                            let usericon = document.querySelector('.usercentericon>img');
+                            usericon.src = iconsdata[count].fields.mailbxurl;
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    //个人中心保存按钮
+    let submitbtn = document.querySelector('.submitbtn');
+    submitbtn.onclick = function () {
+        let nickname = document.querySelector('#nickname');
+        let iconurl = document.querySelector('.usercentericon>img');
+        let data = '';
+
+        if (nickname.value != '' && nickname.value != '{{ user.nickname }}') {
+            data = 'newnickname=' + nickname.value;
+        }
+        console.log('{{ user.nickname }}', data)
+        if (iconurl.src != '{{ user.iconurl }}') {
+            data = data + '&newicon=' + iconurl.src;
+        }
+
+        if (data === '') {
+            alert('您未作任何修改，无需保存');
+        } else {
+            let xhr = new XMLHttpRequest();
+            xhr.open('get', '/mailbx/aui?' + data + '&t=' + Math.random());
+            xhr.send();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let backjson = JSON.parse(xhr.responseText);
+                    if (backjson.status === 1) {
+                        alert(backjson.msg);
+                        window.location.reload();
+                    } else if (backjson.status === 0) {
+                        alert(backjson.msg);
+                    }
+                }
+            }
+        }
+    }
+
+
+    //个人中心返回按钮
+    let backbtn = document.querySelector('.backbtn');
+    backbtn.onclick = function () {
+        let black = document.querySelector('.black');
+        let usercenter = document.querySelector('.usercenter');
+        let chooseicon = document.querySelector('.chooseicon');
+
+        black.style.display = 'none';
+        usercenter.style.transform = 'scale(0)';
+        chooseicon.style.transform = 'scale(0)';
+    }
 
     //点击人物弹出发帖界面
     let textbox = document.querySelector('.textbox');
