@@ -6,18 +6,18 @@ from django.db import models
 # 用户信息表
 class Userinfo(models.Model):
     id = models.CharField('id', primary_key=True, max_length=12)
-    nickname = models.CharField('昵称', max_length=16, default='')
+    nickname = models.CharField('昵称', max_length=16, default='',unique=True)
     iconurl = models.CharField('头像路径', max_length=500, default='')
-    name = models.CharField('姓名', max_length=10)
-    sex = models.CharField('性别', max_length=2)
+    name = models.CharField('姓名', max_length=10,blank=True)
+    sex = models.CharField('性别', max_length=2,blank=True)
     password = models.CharField('密码', max_length=20)
-    keshi = models.CharField('科室', max_length=14)
-    duty = models.CharField('职务', max_length=10)
+    keshi = models.CharField('科室', max_length=14,blank=True)
+    duty = models.CharField('职务', max_length=10,blank=True)
     created_time = models.DateTimeField('创建时间', auto_now_add=True)
     updated_time = models.DateTimeField('更新时间', auto_now=True)
     is_dean = models.BooleanField('是否院长', default=False)
-    is_active = models.BooleanField('账号状态', default=True)
-    ud_operator = models.CharField('操作人', max_length=10, default='')
+    is_active = models.BooleanField('是否可用', default=True)
+    ud_operator = models.CharField('操作人', max_length=10, default='',blank=True)
 
     class Meta:
         db_table = 'userinfo'
@@ -45,8 +45,8 @@ class Emailinfo(models.Model):
     created_date = models.DateField('创建日期', auto_now_add=True)
     created_time = models.DateTimeField('创建时间', auto_now_add=True)
     updated_time = models.DateTimeField('更新时间', auto_now=True)
-    is_active = models.BooleanField('帖子状态', default=True)
-    operator = models.CharField('操作人', max_length=10, default='')
+    is_active = models.BooleanField('是否可见', default=True)
+    operator = models.CharField('操作人', max_length=10, default='',blank=True)
 
     class Meta:
         db_table = 'emailinfo'
@@ -67,8 +67,8 @@ class Comments(models.Model):
     floor = models.IntegerField('楼层', default=0)
     created_time = models.DateTimeField('创建时间', auto_now_add=True)
     updated_time = models.DateTimeField('更新时间', auto_now=True)
-    is_active = models.BooleanField('评论状态', default=True)
-    operator = models.CharField('操作人', max_length=10, default='')
+    is_active = models.BooleanField('是否可见', default=True)
+    operator = models.CharField('操作人', max_length=10, default='',blank=True)
 
     class Meta:
         db_table = 'comments'
@@ -87,8 +87,8 @@ class Usericons(models.Model):
     mailbxurl = models.CharField('mailbxurl路径', max_length=200, default='')
     created_time = models.DateTimeField('添加时间', auto_now_add=True)
     updated_time = models.DateTimeField('修改时间', auto_now=True)
-    is_active = models.BooleanField('状态', default=True)
-    operator = models.CharField('操作人', max_length=10, default='')
+    is_active = models.BooleanField('是否可见', default=True)
+    operator = models.CharField('操作人', max_length=10, default='',blank=True)
 
     class Meta:
         db_table = 'usericons'
