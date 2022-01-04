@@ -55,7 +55,7 @@
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     let jsonobj = JSON.parse(xhr.responseText)  //解析后端给的json数据
-                    console.log(jsonobj, xhr.responseText)
+
                     if (jsonobj.status == 0) {  //判断状态码 0：账密正确，1：账密不对，2：账号不存在，3：账号被禁用
                         // cookie的设置交给后端了 document.cookie = 'userid=' + useridEle.value + ';path=/'  //给主页设置cookie，/可以让所有页面使用该cookie
                         window.location.href = '/mailbx/main/'  //status==0跳转到主页

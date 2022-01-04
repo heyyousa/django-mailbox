@@ -133,7 +133,7 @@
     //页面加载,backdata为返回的邮件json数据
     window.addEventListener('load', function () {
         let xhr = new XMLHttpRequest();
-        xhr.open('get', '/mailbx/mbe?t=' + Math.random());  //此处兼容IE浏览器，IE相同url不会多次发送ajax请求，所以添加一个随机数参数来形成不通的url
+        xhr.open('get', '/mailbx/mbe/?t=' + Math.random());  //此处兼容IE浏览器，IE相同url不会多次发送ajax请求，所以添加一个随机数参数来形成不通的url
         xhr.send(null);
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
@@ -228,7 +228,7 @@
     window.addEventListener('load', function () {
         //加载时请求一次头像数据，之后不再请求
         let xhr = new XMLHttpRequest();
-        xhr.open('get', '/mailbx/getallicons?t=' + Math.random());
+        xhr.open('get', '/mailbx/getallicons/?t=' + Math.random());
         xhr.send();
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
@@ -294,7 +294,7 @@
         if (nickname.value != '' && nickname.value != '{{ user.nickname }}') {
             data = 'newnickname=' + nickname.value;
         }
-        console.log('{{ user.nickname }}', data)
+
         if (iconurl.src != '{{ user.iconurl }}') {
             data = data + '&newicon=' + iconurl.src;
         }
@@ -303,7 +303,8 @@
             alert('您未作任何修改，无需保存');
         } else {
             let xhr = new XMLHttpRequest();
-            xhr.open('get', '/mailbx/aui?' + data + '&t=' + Math.random());
+            //url用encodeURI转码，这样IE不会将中文编码成乱码传给后端
+            xhr.open('get', encodeURI('/mailbx/aui/?' + data + '&t=' + Math.random()));
             xhr.send();
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
@@ -451,7 +452,7 @@
 
                     //ajax请求该邮件的所有评论
                     let xhr = new XMLHttpRequest();
-                    xhr.open('get', '/mailbx/mbc?emailid=' + backdata[count].pk + '&commentatorId=' + backdata[count].fields.recipient + '&t=' + Math.random());  //此处兼容IE浏览器，IE相同url不会多次发送ajax请求，所以添加一个随机数参数来形成不通的url
+                    xhr.open('get', '/mailbx/mbc/?emailid=' + backdata[count].pk + '&commentatorId=' + backdata[count].fields.recipient + '&t=' + Math.random());  //此处兼容IE浏览器，IE相同url不会多次发送ajax请求，所以添加一个随机数参数来形成不通的url
                     xhr.send();
                     xhr.onreadystatechange = function () {
                         if (xhr.readyState === 4 && xhr.status === 200) {
