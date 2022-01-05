@@ -20,7 +20,7 @@ body {
         to right,
         #ffcc70,#4158d0,#c850c0
     ); */
-    font-family: "Jura", sans-serif;
+    font-family: 'Microsoft YaHei';
 }
 /* 
 .bgbox {
@@ -114,9 +114,9 @@ body {
     background-color: transparent;
     color: white;
     border-color: transparent;
-    box-shadow: 8px 8px 15px rgba(0,0,0,0.4);
     text-indent: 5px;
     border-bottom: 1px solid rgba(255,255,255,0.8);
+    outline: none;
 }
 
 .signbox input::-webkit-input-placeholder {
@@ -164,11 +164,13 @@ body {
     border-radius: 6px;
     border-top: 1px solid rgba(255,255,255,0.8);
     border-left: 1px solid rgba(255,255,255,0.8);
+    font-weight: 700;
+    color: white;
 }
 
 .submitbtn:hover, .backbtn:hover {
     background: linear-gradient(
-        to right bottom,rgba(255,255,255,1),rgba(255,255,255,0.8)
+        to right bottom,rgba(0,0,0,0.3),rgba(0,0,0,0.1)
     );
 }
 

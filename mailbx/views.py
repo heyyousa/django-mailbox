@@ -251,7 +251,7 @@ def main_write_comment(request):
 
 # 返回全部头像的url
 def getallicons(request):
-    allicons = Usericons.objects.all()
+    allicons = Usericons.objects.filter(Q(is_active=True))
     alliconsjson = serializers.serialize('json', allicons)
 
     return HttpResponse(alliconsjson)
@@ -260,7 +260,7 @@ def getallicons(request):
 # -----------管理员功能函数API--------------
 # 添加头像API
 def update_new_icons(request):
-    iconfolder = r'F:\django-mailbox\static\mailbx\img\usericon'
+    iconfolder = os.path.abspath('static\\mailbx\\img\\usericon\\')
     icons = os.listdir(iconfolder)
 
     db_last_icon = Usericons.objects.last()
@@ -318,7 +318,4 @@ def update_new_icons(request):
 
             Usericons.objects.create(index=iconindex, homeurl=homeurl, mailbxurl=mailbxurl)
         return HttpResponse('数据不为空，添加成功')
-    # print(os.listdir(iconfolder))
-    # print(icons.pop())
-    # print(os.path.splitext(icons[2])[0])
-    # print(os.path.split(iconfolder2))
+

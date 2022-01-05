@@ -6,9 +6,21 @@ from mailbx.models import *
 import json
 
 
+def to_login(request):
+    return render(request, 'login.html')
+
+
 def login(request):
     if request.method == "GET":
-        return render(request, 'login.html')
+        userid = request.COOKIES.get('userid')
+        print(userid)
+        if not userid:
+            return render(request, 'login.html')
+        else:
+            # 登陆业务块
+            jump = redirect('/mailbx/main/')
+            # jump.set_cookie('userid', userid)
+            return jump
 
     elif request.method == "POST":  # 接收前端的ajax请求并获取数据
         userid = request.POST.get('userid')

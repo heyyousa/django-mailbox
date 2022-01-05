@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('mailbx/', include('mailbx.urls')),  # 分布式路由包含/mailbx/
     path('login/', views.login),  # 登录界面
+    path('', views.to_login),  # 端口号回车直接跳转login
     path('signup/', views.signup),  # 注册功能
     path('ctmail/', views.create_mail),  # 创建测试邮件
     path('test/', views.test),  # ajax测试函数

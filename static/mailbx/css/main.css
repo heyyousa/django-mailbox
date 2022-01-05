@@ -396,6 +396,7 @@ body {
     line-height: 35px;
     text-indent: 15px;
     font-size: 17px;
+    font-weight: 600;
     background: linear-gradient(
         to right bottom,rgba(255,255,255,0.6),rgba(255,255,255,0.1)
     );
@@ -477,6 +478,7 @@ body {
     background: transparent;
     outline: none;
     font-size: 20px;
+    font-weight: 600;
 }
 
 .writezone {
@@ -519,7 +521,6 @@ body {
     margin-left: 50px;
     width: 90px;
     height: 40px;
-    border: none;
     border-radius: 9px;
     cursor: pointer;
     background: linear-gradient(
@@ -530,6 +531,7 @@ body {
     border: transparent;
     font-size: 17px;
     transition: .2s;
+    font-weight: 600;
 }
 
 .btnbox>input:hover {
@@ -886,7 +888,7 @@ body {
 }
 
 .chooseicon>ul {
-    width: 420px;
+    width: 410px;
     height: 380px;
     overflow: auto;
     margin-top: 10px;
