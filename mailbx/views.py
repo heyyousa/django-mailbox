@@ -1,4 +1,6 @@
 import json
+import os
+import sys
 from django.core import serializers
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
@@ -60,7 +62,7 @@ def receive(request):
         return redirect('/login/')
 
 
-# 注销功能，cookie的设置都交给后端
+# 注销功能，后端删除前端的cookie
 def logout(request):
     resp = HttpResponse('1')
     resp.delete_cookie('userid')
@@ -253,3 +255,70 @@ def getallicons(request):
     alliconsjson = serializers.serialize('json', allicons)
 
     return HttpResponse(alliconsjson)
+
+
+# -----------管理员功能函数API--------------
+# 添加头像API
+def update_new_icons(request):
+    iconfolder = r'F:\django-mailbox\static\mailbx\img\usericon'
+    icons = os.listdir(iconfolder)
+
+    db_last_icon = Usericons.objects.last()
+    if not bool(db_last_icon):
+        # 数据库内icon为空时执行
+        homeurl_path = r'../static/mailbx/img/usericon/'
+        mailbxurl_path = r'../../../static/mailbx/img/usericon/'
+
+        for n in range(0, len(icons)):
+            new_last = Usericons.objects.last()
+            if not bool(new_last):
+                lindex = "0000000001"
+                iconindex = lindex
+            else:
+                lindex = int(new_last.index)
+                lindex += 1
+                iconindex = str(lindex).zfill(10)
+
+            homeurl = homeurl_path + icons[n]
+            mailbxurl = mailbxurl_path + icons[n]
+
+            Usericons.objects.create(index=iconindex, homeurl=homeurl, mailbxurl=mailbxurl)
+        return HttpResponse('数据库内icon为空，添加成功')
+    else:
+        # 数据库不为空时执行
+        # 数据库内最后一张icon的文件名（带扩展名）last_icon_file
+        last_icon_file = os.path.split(db_last_icon.homeurl)[1]
+
+        # 循环判断数据库中的头像号与文件夹内的头像号，不相等说明为未添加的,i可作为后续添加的flag
+        i = 0
+        for file in icons:
+            if file != last_icon_file:
+                i += 1
+            else:
+                break
+
+        if i == len(icons) - 1:
+            return HttpResponse('没有新头像')
+
+        homeurl_path = r'../static/mailbx/img/usericon/'
+        mailbxurl_path = r'../../../static/mailbx/img/usericon/'
+
+        for n in range(i, len(icons)):
+            new_last = Usericons.objects.last()
+            if not bool(new_last):
+                lindex = "0000000001"
+                iconindex = lindex
+            else:
+                lindex = int(new_last.index)
+                lindex += 1
+                iconindex = str(lindex).zfill(10)
+
+            homeurl = homeurl_path + icons[n]
+            mailbxurl = mailbxurl_path + icons[n]
+
+            Usericons.objects.create(index=iconindex, homeurl=homeurl, mailbxurl=mailbxurl)
+        return HttpResponse('数据不为空，添加成功')
+    # print(os.listdir(iconfolder))
+    # print(icons.pop())
+    # print(os.path.splitext(icons[2])[0])
+    # print(os.path.split(iconfolder2))
