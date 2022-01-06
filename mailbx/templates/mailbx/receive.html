@@ -7,8 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../../static/mailbx/css/receive.css">
     <link rel="stylesheet" href="{% static 'mailbx/css/receive.css' %}">
+    <link rel="shortcut icon" href="{% static 'mailbx/img/favicon.ico' %}">
     <script src="../../../static/mailbx/js/echarts.js"></script>
-    <title>院长收件箱</title>
+    <title>院长主页</title>
 </head>
 
 <body>
@@ -204,7 +205,7 @@
         mail[i].onclick = function () {
             let commentbox = document.querySelector('.commentbox');
             let black = document.querySelector('.black');
-            commentbox.style.transform = 'scale(1)';
+            commentbox.style.display = 'block';
             black.style.display = 'block';  //遮罩层开启
         }
     }
@@ -216,7 +217,7 @@
         let black = document.querySelector('.black');
         let textarea = document.querySelector('.replyzone>textarea');
         let title = document.querySelector('.titlebox>input');
-        commentbox.style.transform = 'scale(0)';
+        commentbox.style.display = 'none';
         black.style.display = 'none';  //遮罩层关闭
         textarea.value = ''; //清空replyzone内容
     }
@@ -398,7 +399,7 @@
                 mail[i].onclick = function () {
                     let commentbox = document.querySelector('.commentbox');
                     let black = document.querySelector('.black');
-                    commentbox.style.transform = 'scale(1)';  //弹出动画
+                    commentbox.style.display = 'block';  //弹出动画
                     black.style.display = 'block';  //遮罩层开启
 
                     //将邮件内容填充到阅读区
@@ -525,7 +526,7 @@
                         let black = document.querySelector('.black');
                         let textarea = document.querySelector('.replyzone>textarea');
                         let fatherul = document.querySelector('.commentzone>ul');
-                        commentbox.style.transform = 'scale(0)';
+                        commentbox.style.display = 'none';
                         black.style.display = 'none';  //遮罩层关闭
                         textarea.value = '';  //清空标题和replyzone内容
                         fatherul.innerHTML = '';  //清空回复框内的内容防止重复添加
@@ -586,7 +587,7 @@
                     mail[a++].onclick = function () {
                         let commentbox = document.querySelector('.commentbox');
                         let black = document.querySelector('.black');
-                        commentbox.style.transform = 'scale(1)';  //弹出动画
+                        commentbox.style.display = 'block';  //弹出动画
                         black.style.display = 'block';  //遮罩层开启
 
                         //将邮件内容填充到阅读区
@@ -713,7 +714,7 @@
                             let black = document.querySelector('.black');
                             let textarea = document.querySelector('.replyzone>textarea');
                             let fatherul = document.querySelector('.commentzone>ul');
-                            commentbox.style.transform = 'scale(0)';
+                            commentbox.style.display = 'none';
                             black.style.display = 'none';  //遮罩层关闭
                             textarea.value = '';  //清空标题和replyzone内容
                             fatherul.innerHTML = '';  //清空回复框内的内容防止重复添加
@@ -776,7 +777,7 @@
                     mail[a++].onclick = function () {
                         let commentbox = document.querySelector('.commentbox');
                         let black = document.querySelector('.black');
-                        commentbox.style.transform = 'scale(1)';  //弹出动画
+                        commentbox.style.display = 'block';  //弹出动画
                         black.style.display = 'block';  //遮罩层开启
 
                         //将邮件内容填充到阅读区
@@ -903,7 +904,7 @@
                             let black = document.querySelector('.black');
                             let textarea = document.querySelector('.replyzone>textarea');
                             let fatherul = document.querySelector('.commentzone>ul');
-                            commentbox.style.transform = 'scale(0)';
+                            commentbox.style.display = 'none';
                             black.style.display = 'none';  //遮罩层关闭
                             textarea.value = '';  //清空标题和replyzone内容
                             fatherul.innerHTML = '';  //清空回复框内的内容防止重复添加
@@ -965,7 +966,7 @@
                     mail[a++].onclick = function () {
                         let commentbox = document.querySelector('.commentbox');
                         let black = document.querySelector('.black');
-                        commentbox.style.transform = 'scale(1)';  //弹出动画
+                        commentbox.style.display = 'block';  //弹出动画
                         black.style.display = 'block';  //遮罩层开启
 
                         //将邮件内容填充到阅读区
@@ -1092,7 +1093,7 @@
                             let black = document.querySelector('.black');
                             let textarea = document.querySelector('.replyzone>textarea');
                             let fatherul = document.querySelector('.commentzone>ul');
-                            commentbox.style.transform = 'scale(0)';
+                            commentbox.style.display = 'none';
                             black.style.display = 'none';  //遮罩层关闭
                             textarea.value = '';  //清空标题和replyzone内容
                             fatherul.innerHTML = '';  //清空回复框内的内容防止重复添加

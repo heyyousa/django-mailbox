@@ -13,14 +13,12 @@ def to_login(request):
 def login(request):
     if request.method == "GET":
         userid = request.COOKIES.get('userid')
-        print(userid)
         if not userid:
             return render(request, 'login.html')
         else:
             # 登陆业务块
-            jump = redirect('/mailbx/main/')
-            # jump.set_cookie('userid', userid)
-            return jump
+            message = '已有用户登录邮箱，关闭浏览器重新登录'
+            return render(request, 'mailbx/error.html', locals())
 
     elif request.method == "POST":  # 接收前端的ajax请求并获取数据
         userid = request.POST.get('userid')
@@ -72,7 +70,8 @@ def signup(request):
             return JsonResponse(backdata)
 
         try:
-            Userinfo.objects.create(id=userid, nickname=nickname, sex='', password=userpsw, keshi='', duty='', iconurl=usericon)
+            Userinfo.objects.create(id=userid, nickname=nickname, sex='', password=userpsw, keshi='', duty='',
+                                    iconurl=usericon)
         except Exception as e:
             print('--id或昵称写入重复 %s' % (e))
             backdata = {'status': 1, 'msg': '账号已被注册'}

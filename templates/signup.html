@@ -8,6 +8,7 @@
     <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> -->
     <link rel="stylesheet" href="../static/home/css/signup.css">
     <link rel="stylesheet" href="{% static 'home/css/signup.css' %}">
+    <link rel="shortcut icon" href="{% static 'mailbx/img/favicon.ico' %}">
     <!--django导入css文件-->
     <title>注册</title>
 </head>
@@ -20,7 +21,7 @@
         <div class="formbox">
             <form>
                 <div class="usericon">
-                    <img src="../static/mailbx/img/usericon/1.jpg" alt="">
+                    <img src="../static/mailbx/img/usericon/t.jpg" alt="">
                 </div>
                 <div class="icontext">
                     <p>点击更换头像</p>
@@ -59,7 +60,7 @@
     window.addEventListener('load', function () {
         //加载时请求一次头像数据，之后不再请求
         let xhr = new XMLHttpRequest();
-        xhr.open('get', '/mailbx/getallicons/');
+        xhr.open('get', '/mailbx/getallicons/?t=' + Math.random());
         xhr.send();
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {

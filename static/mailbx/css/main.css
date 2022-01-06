@@ -369,7 +369,8 @@ body {
 /* 弹出式发帖页面css */
 .glassbg {
     position: absolute;
-    transform: scale(0);  /*使用缩放来实现弹出窗口*/
+    /* transform: scale(0);  使用缩放来实现弹出窗口 */
+    display: none;
     width: 500px;
     height: 550px;
     z-index: 6;
@@ -541,7 +542,8 @@ body {
 /* 弹出式评论页面 */
 .commentbox {
     position: absolute;
-    transform: scale(0);  /*使用缩放来实现弹出窗口*/
+    /* transform: scale(0);  使用缩放来实现弹出窗口 */
+    display: none;
     width: 700px;
     height: 700px;
     z-index: 6;
@@ -751,7 +753,7 @@ body {
     top: 100px;
     left: 50%;
     margin-left: -270px;
-    transform: scale(0);
+    display: none;
     z-index: 4;
     width: 540px;
     height: 500px;
@@ -878,7 +880,7 @@ body {
 /* 弹出式头像选择界面 */
 .chooseicon {
     position: absolute;
-    transform: scale(0);
+    display: none;
     z-index: 9;
     top: 120px;
     left: 50%;

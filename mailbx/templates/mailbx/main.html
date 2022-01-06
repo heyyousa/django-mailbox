@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../../static/mailbx/css/main.css">
     <link rel="stylesheet" href="{% static 'mailbx/css/main.css' %}">
+    <link rel="shortcut icon" href="{% static 'mailbx/img/favicon.ico' %}">
     <title>信箱主页</title>
 </head>
 
@@ -239,7 +240,7 @@
                 usercenterbtn.onclick = function () {
                     let usercenter = document.querySelector('.usercenter');
                     let black = document.querySelector('.black');
-                    usercenter.style.transform = 'scale(1)';  //弹出动画
+                    usercenter.style.display = 'block';  //弹出动画
                     black.style.display = 'block';  //遮罩层开启
 
                     let usercentericon = document.querySelector('.usercentericon>img');
@@ -258,7 +259,7 @@
                     let iconul = document.querySelector('.chooseicon>ul');
                     let chooseicon = document.querySelector('.chooseicon');
                     let black = document.querySelector('.black');
-                    chooseicon.style.transform = 'scale(1)';
+                    chooseicon.style.display = 'block';
                     black.style.display = 'block';
 
                     iconul.innerHTML = '';  //每次显示前清空ul内li
@@ -273,7 +274,7 @@
                         let icons = document.querySelectorAll('.chooseicon>ul>li');
                         let count = i;
                         icons[i].onclick = function () {
-                            chooseicon.style.transform = 'scale(0)';
+                            chooseicon.style.display = 'none';
 
                             let usericon = document.querySelector('.usercentericon>img');
                             usericon.src = iconsdata[count].fields.mailbxurl;
@@ -329,8 +330,8 @@
         let chooseicon = document.querySelector('.chooseicon');
 
         black.style.display = 'none';
-        usercenter.style.transform = 'scale(0)';
-        chooseicon.style.transform = 'scale(0)';
+        usercenter.style.display = 'none';
+        chooseicon.style.display = 'none';
     }
 
     //点击人物弹出发帖界面
@@ -338,7 +339,7 @@
     textbox.onclick = function () {
         let glassbg = document.querySelector('.glassbg');
         let black = document.querySelector('.black');
-        glassbg.style.transform = 'scale(1)';  //弹出动画
+        glassbg.style.display = 'block';  //弹出动画
         black.style.display = 'block';  //遮罩层开启
     }
 
@@ -364,7 +365,7 @@
                     let black = document.querySelector('.black');
                     let textarea = document.querySelector('textarea');
                     let title = document.querySelector('.titlebox>input');
-                    glassbg.style.transform = 'scale(0)';
+                    glassbg.style.display = 'none';
                     black.style.display = 'none';  //遮罩层关闭
                     textarea.value = ''; //清空标题和内容
                     title.value = '';
@@ -383,7 +384,7 @@
         let black = document.querySelector('.black');
         let textarea = document.querySelector('textarea');
         let title = document.querySelector('.titlebox>input');
-        glassbg.style.transform = 'scale(0)';
+        glassbg.style.display = 'none';
         black.style.display = 'none';  //遮罩层关闭
         textarea.value = ''; //清空标题和内容
         title.value = '';
@@ -440,7 +441,7 @@
                 mail[a++].onclick = function () {
                     let commentbox = document.querySelector('.commentbox');
                     let black = document.querySelector('.black');
-                    commentbox.style.transform = 'scale(1)';  //弹出动画
+                    commentbox.style.display = 'block';  //弹出动画
                     black.style.display = 'block';  //遮罩层开启
 
                     //将邮件内容填充到阅读区
@@ -529,7 +530,7 @@
                         let textarea = document.querySelector('.replyzone>textarea');
                         let title = document.querySelector('.titlebox>input');
                         let fatherul = document.querySelector('.commentzone>ul');
-                        commentbox.style.transform = 'scale(0)';
+                        commentbox.style.display = 'none';
                         black.style.display = 'none';  //遮罩层关闭
                         textarea.value = ''; //清空标题和replyzone内容
                         title.value = '';

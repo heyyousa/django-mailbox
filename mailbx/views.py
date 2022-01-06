@@ -162,13 +162,14 @@ def recevie_back_emails(request):
 
     emails = Emailinfo.objects.filter(Q(recipient=deanid)).order_by('-created_time')
     emailsdata = serializers.serialize('json', emails)
-
+    print(emailsdata)
+    print(emails)
     # 将各个状态的邮件数量统计出来发给前端
-    new_emails = Emailinfo.objects.filter(Q(email_flag=1)).count()
-    new_reply = Emailinfo.objects.filter(Q(poster_new_comment=1)).count()
+    new_emails = Emailinfo.objects.filter(Q(email_flag=1) & Q(recipient=deanid)).count()
+    new_reply = Emailinfo.objects.filter(Q(poster_new_comment=1) & Q(recipient=deanid)).count()
     # ↓防止未处理和新回复有重叠的部分，限制未处理为是未处理并且不是新回复的邮件为未处理的真实数量↓
-    untreated_emails = Emailinfo.objects.filter(Q(email_flag=2) & Q(poster_new_comment=0)).count()
-    did_emails = Emailinfo.objects.filter(Q(email_flag=3)).count()
+    untreated_emails = Emailinfo.objects.filter(Q(email_flag=2) & Q(poster_new_comment=0) & Q(recipient=deanid)).count()
+    did_emails = Emailinfo.objects.filter(Q(email_flag=3) & Q(recipient=deanid)).count()
     emailstatus = {'new_emails': new_emails, 'new_reply': new_reply, 'untreated_emails': untreated_emails,
                    'did_emails': did_emails}
 
@@ -295,9 +296,10 @@ def update_new_icons(request):
             if file != last_icon_file:
                 i += 1
             else:
+                i += 1
                 break
 
-        if i == len(icons) - 1:
+        if i == len(icons):
             return HttpResponse('没有新头像')
 
         homeurl_path = r'../static/mailbx/img/usericon/'
@@ -318,4 +320,3 @@ def update_new_icons(request):
 
             Usericons.objects.create(index=iconindex, homeurl=homeurl, mailbxurl=mailbxurl)
         return HttpResponse('数据不为空，添加成功')
-

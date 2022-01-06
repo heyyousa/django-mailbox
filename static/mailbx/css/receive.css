@@ -365,7 +365,8 @@ body {
 /* 弹出式评论框样式 */
 .commentbox {
     position: absolute;
-    transform: scale(0);  /*使用缩放来实现弹出窗口*/
+    /* transform: scale(0);  使用缩放来实现弹出窗口 */
+    display: none;
     width: 700px;
     height: 700px;
     z-index: 6;
