@@ -29,7 +29,7 @@ def login(request):
             user = Userinfo.objects.get(Q(id=userid))
         except Exception as e:
             jsondata = {'status': 2, 'msg': '账号不存在'}  # 状态码0：账密正确，1：账密不对，2：账号不存在，3：账号被禁用
-            return HttpResponse(jsondata)
+            return JsonResponse(jsondata)
 
         if not user.is_active:
             jsondata = {'status': 3, 'msg': '账号被禁用'}  # 数据包含状态status和消息msg或重定向url redirct
