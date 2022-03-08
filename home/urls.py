@@ -17,6 +17,9 @@ from django.contrib import admin
 from django.urls import path, include
 from home import views
 
+from django.conf import settings  #官方要求的引用方式
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('mailbx/', include('mailbx.urls')),  # 分布式路由包含/mailbx/
@@ -27,3 +30,5 @@ urlpatterns = [
     path('test/', views.test),  # ajax测试函数
     path('ctcoms/', views.create_comments),  # 创建测试评论
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
